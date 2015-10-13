@@ -1,13 +1,10 @@
 <idea-plugin version="2">
   <id>edu.utsa.cs.sefm.privacypolicyplugin</id>
-  <name>Andorid Privacy Policy Verifier</name>
+  <name>Android Privacy Policy Verifier</name>
   <version>1.0</version>
   <vendor email="support@yourcompany.com" url="http://www.yourcompany.com">YourCompany</vendor>
 
-  <description><![CDATA[
-      Enter short description for your plugin here.<br>
-      <em>most HTML tags may be used</em>
-    ]]></description>
+  <description>Detects potential Android privacy policy violations.</description>
 
   <change-notes><![CDATA[
       Add change notes here.<br>
