@@ -3,10 +3,7 @@ package org.utsa.cs.sefm.privacypolicyplugin;
 import com.intellij.codeInsight.daemon.GroupNames;
 import com.intellij.codeInspection.LocalInspectionTool;
 import com.intellij.codeInspection.ProblemsHolder;
-import com.intellij.psi.JavaElementVisitor;
-import com.intellij.psi.PsiElementVisitor;
-import com.intellij.psi.PsiJavaFile;
-import com.intellij.psi.PsiMethodCallExpression;
+import com.intellij.psi.*;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 
@@ -43,33 +40,37 @@ public class PolicyViolationInspection extends LocalInspectionTool{
 
         return new JavaElementVisitor() {
 
-            //https://devnet.jetbrains.com/message/5506789#5506789
             @Override
             public void visitMethodCallExpression(PsiMethodCallExpression expression) {
-                String methodName = "getName";
 
-                if(expression.getMethodExpression().getReferenceName().toString().equals(methodName)) {
-//                    String method = expression.getManager().get
-                    holder.registerProblem(expression, ((PsiJavaFile) expression.getMethodExpression().getContainingFile()).getPackageName());
-                    // package: ((PsiJavaFie) psiFile).getPackageName()
+                String violation = getViolation(expression);
+                if(violation != null) {
+                    holder.registerProblem(expression, violation);
                 }
             }
-
-//            @Override
-//            public void visitReferenceExpression(PsiReferenceExpression expression) {
-//                if(expression.){
-//                    holder.registerProblem(expression, "Possible policy violation");
-//                }
-//            }
         };
     }
 
-    private List getViolationApis(){
+    private List getAllowableApis(){
+        return new ArrayList();
+    }
+
+    private List getAllApis(){
         return new ArrayList();
     }
 
     @Override
     public boolean isEnabledByDefault() {
         return true;
+    }
+
+    private String getViolation(PsiMethodCallExpression expression){
+        String searchFor = "java.io.file.getname";
+        String className = expression.resolveMethod().getContainingClass().getQualifiedName();
+        String methodName = expression.getMethodExpression().getReferenceName().toString();
+        String fullName = className + "." + methodName;
+        if(fullName.toLowerCase().equals(searchFor.toLowerCase()))
+            return fullName;
+        return null;
     }
 }
