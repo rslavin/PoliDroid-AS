@@ -2,13 +2,12 @@
     <id>edu.utsa.cs.sefm.privacypolicyplugin</id>
     <name>Android Privacy Policy Verifier</name>
     <version>1.0</version>
-    <vendor email="support@yourcompany.com" url="http://www.yourcompany.com">YourCompany</vendor>
+    <vendor email="rocky.slavin@gmail.com" url="http://sefm.cs.utsa.edu">UTSA SEFM Research Group</vendor>
 
     <description>Detects potential Android privacy policy violations.</description>
 
     <change-notes><![CDATA[
-      Add change notes here.<br>
-      <em>most HTML tags may be used</em>
+        First version. Detects potential privacy policy violations based on simple mappings and policy file.
     ]]>
     </change-notes>
 
