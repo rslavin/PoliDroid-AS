@@ -1,14 +1,14 @@
-package org.utsa.cs.sefm.privacypolicyplugin;
+package edu.utsa.cs.sefm.privacypolicyplugin;
 
 import com.intellij.codeInsight.daemon.GroupNames;
 import com.intellij.codeInspection.LocalInspectionTool;
 import com.intellij.codeInspection.ProblemsHolder;
-import com.intellij.psi.*;
+import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.psi.JavaElementVisitor;
+import com.intellij.psi.PsiElementVisitor;
+import com.intellij.psi.PsiMethodCallExpression;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by Rocky on 10/11/2015.
@@ -51,12 +51,14 @@ public class PolicyViolationInspection extends LocalInspectionTool{
         };
     }
 
-    private List getAllowableApis(){
-        return new ArrayList();
+    private String isViolation(String api){
+        PolicyViolationAppComponent comp = (PolicyViolationAppComponent)ApplicationManager.getApplication().getComponent("PolicyViolationAppComponent");
+        return comp.isViolation(api);
     }
 
-    private List getAllApis(){
-        return new ArrayList();
+    private String isMappedApi(String api){
+        PolicyViolationAppComponent comp = (PolicyViolationAppComponent)ApplicationManager.getApplication().getComponent("PolicyViolationAppComponent");
+        return comp.hasApi(api);
     }
 
     @Override
@@ -65,12 +67,14 @@ public class PolicyViolationInspection extends LocalInspectionTool{
     }
 
     private String getViolation(PsiMethodCallExpression expression){
-        String searchFor = "java.io.file.getname";
         String className = expression.resolveMethod().getContainingClass().getQualifiedName();
         String methodName = expression.getMethodExpression().getReferenceName().toString();
         String fullName = className + "." + methodName;
-        if(fullName.toLowerCase().equals(searchFor.toLowerCase()))
-            return fullName;
+
+        String phrase = isViolation(fullName.toLowerCase());
+        if(phrase.length() > 0)
+            return "Possible privacy policy violation. Consider adding the phrase: \"" + phrase + "\" to your policy.";
         return null;
     }
+
 }

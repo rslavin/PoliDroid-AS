@@ -1,4 +1,4 @@
-package org.utsa.cs.sefm.privacypolicyplugin;
+package edu.utsa.cs.sefm.privacypolicyplugin;
 
 import com.intellij.codeInspection.InspectionToolProvider;
 
