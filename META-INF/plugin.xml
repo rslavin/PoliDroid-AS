@@ -49,7 +49,11 @@
                     text="Select _Mappings File" description="Choose a mappings file." />
             <action id="PolicyFileChooser" class="edu.utsa.cs.sefm.privacypolicyplugin.window.PolicyFileChooser"
                     text="Select _Policy File" description="Choose a policy file." />
+            <action id="CheckSinks" class="edu.utsa.cs.sefm.privacypolicyplugin.flow.CheckSinks"
+                    text="_Verify Sinks" description="Check for information leaks to network." />
         </group>
+        <action id="CheckSinks" class="edu.utsa.cs.sefm.privacypolicyplugin.flow.CheckSinks" text="Check Sinks"
+                description="Check sinks with flowdroid"/>
     </actions>
 
 </idea-plugin>
