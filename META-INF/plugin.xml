@@ -40,8 +40,8 @@
         <!-- Add your actions here -->
 
         <!--<action id="MapFileChooser" class="MapFileChooser"-->
-                <!--text="MapFileChooser" description="Choose a mappings file.">-->
-            <!--<add-to-group group-id="MainMenu" anchor="last"/>-->
+        <!--text="MapFileChooser" description="Choose a mappings file.">-->
+        <!--<add-to-group group-id="MainMenu" anchor="last"/>-->
         <!--</action>-->
         <group id="PrivacyPolicy.menu" text="_Privacy Policy Checker" description="Privacy Policy Menu">
             <add-to-group group-id="MainMenu" anchor="last"  />
@@ -52,8 +52,6 @@
             <action id="CheckSinks" class="edu.utsa.cs.sefm.privacypolicyplugin.flow.CheckSinks"
                     text="_Verify Sinks" description="Check for information leaks to network." />
         </group>
-        <action id="CheckSinks" class="edu.utsa.cs.sefm.privacypolicyplugin.flow.CheckSinks" text="Check Sinks"
-                description="Check sinks with flowdroid"/>
     </actions>
 
 </idea-plugin>

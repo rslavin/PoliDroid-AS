@@ -1,0 +1,13 @@
+store
+collect
+receive
+aggregate
+send
+record
+acquire
+obtain
+use
+transmit
+access
+log
+retain

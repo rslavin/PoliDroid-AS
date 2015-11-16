@@ -9,10 +9,12 @@ import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import edu.utsa.cs.sefm.privacypolicyplugin.PolicyViolationAppComponent;
+import edu.utsa.cs.sefm.privacypolicyplugin.ontology.OntologyOWLAPI;
+import edu.utsa.cs.sefm.privacypolicyplugin.preprocess.HTMLUtils;
+import edu.utsa.cs.sefm.privacypolicyplugin.preprocess.ParagraphProcessor;
+import org.semanticweb.owlapi.model.OWLOntology;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 
 /**
  * Created by Rocky on 10/18/2015.
@@ -23,10 +25,19 @@ public class PolicyFileChooser extends AnAction {
         Project project = e.getData(DataKeys.PROJECT);
         VirtualFile file = FileChooser.chooseFile(FileChooserDescriptorFactory.createSingleFileNoJarsDescriptor(), project, null);
         PolicyViolationAppComponent comp = (PolicyViolationAppComponent) ApplicationManager.getApplication().getComponent("PolicyViolationAppComponent");
+        String documentPlaintext = HTMLUtils.getText(file);
+        System.out.println(documentPlaintext);
+        ParagraphProcessor paragraphProcessor = new ParagraphProcessor();
+
+        File paragraphs = paragraphProcessor.processParagraphs(documentPlaintext);
+        System.out.println("Phrases in policy");
+        for(String elem : paragraphProcessor.phrasesInPolicy){
+            System.out.println(elem);
+        }
 
         if (!comp.apis.isEmpty())
             try {
-                BufferedReader br = new BufferedReader(new InputStreamReader(file.getInputStream()));
+                BufferedReader br = new BufferedReader(new FileReader(paragraphs));
                 String line;
 
                 // TODO check if mappings exist, if not add dialog

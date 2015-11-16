@@ -7,8 +7,13 @@ import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.psi.JavaElementVisitor;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.PsiMethodCallExpression;
+import edu.utsa.cs.sefm.privacypolicyplugin.ontology.OntologyOWLAPI;
+import edu.utsa.cs.sefm.privacypolicyplugin.preprocess.ParagraphProcessor;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
+import org.semanticweb.owlapi.model.OWLOntology;
+
+import java.util.List;
 
 /**
  * Created by Rocky on 10/11/2015.
@@ -51,7 +56,7 @@ public class PolicyViolationInspection extends LocalInspectionTool{
         };
     }
 
-    private String isViolation(String api){
+    private List<String> isViolation(String api){
         PolicyViolationAppComponent comp = (PolicyViolationAppComponent)ApplicationManager.getApplication().getComponent("PolicyViolationAppComponent");
         return comp.isViolation(api);
     }
@@ -71,10 +76,24 @@ public class PolicyViolationInspection extends LocalInspectionTool{
         String methodName = expression.getMethodExpression().getReferenceName().toString();
         String fullName = className + "." + methodName;
 
-        String phrase = isViolation(fullName.toLowerCase());
+       /* String phrase = isViolation(fullName.toLowerCase());
         if(phrase.length() > 0)
             return "Possible privacy policy violation. Consider adding the phrase: \"" + phrase + "\" to your policy.";
         return null;
+        */
+        List<String> phrasesOfAPI = isViolation(fullName.toLowerCase());
+        if(! phrasesOfAPI.isEmpty()){
+             for(String phraseMappedtoAPI : phrasesOfAPI){
+                 for(String phraseInPolicy: ParagraphProcessor.phrasesInPolicy){
+                     if (OntologyOWLAPI.isEquivalent(phraseMappedtoAPI.toLowerCase(), phraseInPolicy.toLowerCase(), ParagraphProcessor.ontology)){
+                         return "Possible weak privacy policy violation. \"" + phraseMappedtoAPI + "\" is synonym of \"" + phraseInPolicy + "\" . Consider clarifying the privacy policy." ;
+                     }
+                     if(OntologyOWLAPI.isAncestorOf(phraseMappedtoAPI.toLowerCase(), phraseInPolicy.toLowerCase(), ParagraphProcessor.ontology)){
+                         return "Possible weak privacy policy violation. \"" + phraseMappedtoAPI + "\" can be subsumed by \"" + phraseInPolicy + "\" . Consider clarifying the privacy policy." ;
+                     }
+                 }
+             }
+        }
+        return null;
     }
-
 }

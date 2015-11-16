@@ -108,13 +108,14 @@ public class PolicyViolationAppComponent implements ApplicationComponent {
      * @param api API to check for violation
      * @return Phrase associated with violation _or_ empty String if no violation
      */
-    public String isViolation(String api){
+    public List<String> isViolation(String api){
         for (Api existingApi : apis) {
             if (!existingApi.allowed && existingApi.api.toLowerCase().equals(api.toLowerCase())) {
-                return existingApi.phrases.get(0);
+                return existingApi.phrases;
             }
         }
-        return "";
+        List<String> emptyList = Collections.emptyList();
+        return emptyList;
     }
 
     /**
