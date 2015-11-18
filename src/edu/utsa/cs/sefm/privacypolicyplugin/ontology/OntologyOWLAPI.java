@@ -4,27 +4,23 @@ package edu.utsa.cs.sefm.privacypolicyplugin.ontology;
  * Created by Mitra on 11/15/2015.
  */
 import java.io.File;
+import java.io.IOException;
 import java.util.*;
 
+import com.intellij.openapi.vfs.VirtualFile;
+import org.apache.log4j.lf5.util.Resource;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.AddAxiom;
 import org.semanticweb.owlapi.model.IRI;
-import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
-import org.semanticweb.owlapi.model.OWLClassAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLException;
-import org.semanticweb.owlapi.model.OWLIndividual;
-import org.semanticweb.owlapi.model.OWLObjectProperty;
-import org.semanticweb.owlapi.model.OWLObjectPropertyAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
-import org.semanticweb.owlapi.model.OWLOntologyStorageException;
 
 public class OntologyOWLAPI {
     static OWLOntologyManager man;
-    static OWLOntology ontology;
     static OWLDataFactory fact;
     public static List<List<String>> allOntologyPhrases = new ArrayList<List<String>>();
     static String unvisited = "unvisited" ;
@@ -33,21 +29,24 @@ public class OntologyOWLAPI {
     public static ArrayList<ArrayList<String>> relations = new ArrayList<>();
     static List<AddAxiom> myList = new ArrayList<AddAxiom>();
     public static HashMap<String, String> map = new HashMap<String, String>();
+    public static OWLOntology ontology;
     /**
      * loads the ontology from the specified file
      * @param ontologyFile
      */
-    public static OWLOntology loader(File ontologyFile){
+    public static void loader(VirtualFile ontologyFile){
         try {
             man = OWLManager.createOWLOntologyManager();
             fact = man.getOWLDataFactory();
-            //File file  = new File(ontologyFile);
-            IRI ontologyIRI = IRI.create(ontologyFile);
-            ontology = man.loadOntology(ontologyIRI);
+            try {
+                ontology = man.loadOntologyFromOntologyDocument(ontologyFile.getInputStream());
+                System.out.println("Ontology was read successfully:"+ ontology.getAxiomCount());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }catch (OWLException e) {
             e.printStackTrace();
         }
-        return ontology;
         }
         public static List<List<String>> ListOfOntologyPhrases(OWLOntology ontology){
             for (OWLClass cls : ontology.getClassesInSignature()){
@@ -56,6 +55,14 @@ public class OntologyOWLAPI {
                 }
             return allOntologyPhrases;
         }
+    public static boolean classDoesExists(String className, OWLOntology ontology){
+        for (OWLClass cls : ontology.getClassesInSignature()){
+            if (className.compareToIgnoreCase(cls.toString().substring(cls.toString().indexOf('#')+1, cls.toString().indexOf('>')))==0){
+                return true;
+            }
+        }
+        return false;
+    }
     /**
      * checks the subClass relationship between two phrase in ontology
      * @param child

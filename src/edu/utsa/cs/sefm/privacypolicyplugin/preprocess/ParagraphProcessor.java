@@ -5,11 +5,9 @@ package edu.utsa.cs.sefm.privacypolicyplugin.preprocess;
  */
 
 import edu.utsa.cs.sefm.privacypolicyplugin.ontology.OntologyOWLAPI;
-import org.semanticweb.owlapi.model.OWLOntology;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
@@ -17,27 +15,11 @@ import java.nio.file.Paths;
 import java.util.*;
 
 public class ParagraphProcessor {
-    static ArrayList<String> collectVerbList = new ArrayList<>();
+    static List<String> collectVerbList = Arrays.asList("store", "collect", "receive", "aggregate", "send", "record", "acquire", "obtain", "use", "transmit", "access", "log", "retain");
     public static List<String> phrasesInPolicy = new ArrayList<>();
-    final static String COLLECT_VERBS_FILENAME = "C:\\Users\\Mitra\\IdeaProjects\\privacy-policy-plugin2\\inputFiles\\collect_verbs.txt";
-    static File ontologyFile = new File("C:\\Users\\Mitra\\IdeaProjects\\privacy-policy-plugin2\\inputFiles\\Android_Policy_Ontology.owl");
-    public static OWLOntology ontology = OntologyOWLAPI.loader(ontologyFile);
-    static
-    {
-        try
-        {
-            Scanner s = new Scanner(new File(COLLECT_VERBS_FILENAME));
-            while(s.hasNextLine())
-                collectVerbList.add(s.nextLine());
-        }
-        catch (FileNotFoundException e) { e.printStackTrace(); }
-    }
-    public static File processParagraphs(String text){
+    public static String processParagraphs(String text){
         String currLine;
-
-            File file = new File("C:\\Users\\Mitra\\IdeaProjects\\privacy-policy-plugin2\\policy.txt");
-        try {
-            FileWriter fileWriter = new FileWriter(file);
+        String content = "";
             Scanner sc = new Scanner(text);
             while (sc.hasNextLine()) {
                 currLine = sc.nextLine();
@@ -46,12 +28,10 @@ public class ParagraphProcessor {
                     List<String> lemmaList = new LinkedList<String>();
                     lemmaList = slem.lemmatize(currLine);
                     for (String lemma : lemmaList){
-                        //if(PolicySentenceExtractor.containsCollectVerb(lemma)){
                         String collectionVerb = containsWhichCollectVerb(lemma);
                         if(!collectionVerb.equals("VerbNotFound")){
                             System.out.println(currLine);
-                            fileWriter.write(currLine);
-                            fileWriter.write("\n");
+                            content += currLine;
                             findPhrasesInOntology(lemmaList);
                             break;
                         }
@@ -59,17 +39,7 @@ public class ParagraphProcessor {
                 }
 
             }
-            sc.close();
-            fileWriter.flush();
-            fileWriter.close();
-        }
-        catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        return file;
+        return content;
     }
     static String readFile(String path, Charset encoding)
             throws IOException
@@ -90,8 +60,7 @@ public class ParagraphProcessor {
         return def;
     }
     public static void findPhrasesInOntology(List<String> lemmaList){
-
-        List<List<String>> allPhrases = OntologyOWLAPI.ListOfOntologyPhrases(ontology);
+        List<List<String>> allPhrases = OntologyOWLAPI.ListOfOntologyPhrases(OntologyOWLAPI.ontology);
         for(List<String> phrase: allPhrases ){
             if(Collections.indexOfSubList(lemmaList, phrase)!= -1 || Collections.lastIndexOfSubList(lemmaList, phrase)!= -1){
                 String newPhrase= "";

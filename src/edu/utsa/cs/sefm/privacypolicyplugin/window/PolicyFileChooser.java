@@ -29,15 +29,15 @@ public class PolicyFileChooser extends AnAction {
         System.out.println(documentPlaintext);
         ParagraphProcessor paragraphProcessor = new ParagraphProcessor();
 
-        File paragraphs = paragraphProcessor.processParagraphs(documentPlaintext);
+        String paragraphs = paragraphProcessor.processParagraphs(documentPlaintext);
         System.out.println("Phrases in policy");
         for(String elem : paragraphProcessor.phrasesInPolicy){
             System.out.println(elem);
         }
 
-        if (!comp.apis.isEmpty())
+        if (!comp.apis.isEmpty() && !OntologyOWLAPI.ontology.isEmpty())
             try {
-                BufferedReader br = new BufferedReader(new FileReader(paragraphs));
+                BufferedReader br = new BufferedReader(new StringReader(paragraphs));
                 String line;
 
                 // TODO check if mappings exist, if not add dialog

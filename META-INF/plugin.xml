@@ -47,6 +47,8 @@
             <add-to-group group-id="MainMenu" anchor="last"  />
             <action id="MapFileChooser" class="edu.utsa.cs.sefm.privacypolicyplugin.window.MapFileChooser"
                     text="Select _Mappings File" description="Choose a mappings file." />
+            <action id="OntologyFileChooser" class="edu.utsa.cs.sefm.privacypolicyplugin.window.OntologyFileChooser"
+                    text="Select _Ontology File" description="Choose an ontology file." />
             <action id="PolicyFileChooser" class="edu.utsa.cs.sefm.privacypolicyplugin.window.PolicyFileChooser"
                     text="Select _Policy File" description="Choose a policy file." />
             <action id="CheckSinks" class="edu.utsa.cs.sefm.privacypolicyplugin.flow.CheckSinks"

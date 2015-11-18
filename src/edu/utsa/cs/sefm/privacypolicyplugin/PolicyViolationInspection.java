@@ -13,6 +13,7 @@ import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 import org.semanticweb.owlapi.model.OWLOntology;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -50,6 +51,7 @@ public class PolicyViolationInspection extends LocalInspectionTool{
 
                 String violation = getViolation(expression);
                 if(violation != null) {
+                    System.out.println("violation is: " + violation);
                     holder.registerProblem(expression, violation);
                 }
             }
@@ -76,24 +78,47 @@ public class PolicyViolationInspection extends LocalInspectionTool{
         String methodName = expression.getMethodExpression().getReferenceName().toString();
         String fullName = className + "." + methodName;
 
-       /* String phrase = isViolation(fullName.toLowerCase());
-        if(phrase.length() > 0)
+        /*String phrase = isViolation(fullName.toLowerCase());
+        if(phrase.length() > 0) {
+            System.out.println("Possible privacy policy violation. Consider adding the phrase: \"" + phrase + "\" to your policy.");
             return "Possible privacy policy violation. Consider adding the phrase: \"" + phrase + "\" to your policy.";
+        }
         return null;
-        */
-        List<String> phrasesOfAPI = isViolation(fullName.toLowerCase());
+*/
+       List<String> phrasesOfAPI = isViolation(fullName.toLowerCase());
+       // List<String> possiblePhrases = new ArrayList<>();
         if(! phrasesOfAPI.isEmpty()){
-             for(String phraseMappedtoAPI : phrasesOfAPI){
-                 for(String phraseInPolicy: ParagraphProcessor.phrasesInPolicy){
-                     if (OntologyOWLAPI.isEquivalent(phraseMappedtoAPI.toLowerCase(), phraseInPolicy.toLowerCase(), ParagraphProcessor.ontology)){
-                         return "Possible weak privacy policy violation. \"" + phraseMappedtoAPI + "\" is synonym of \"" + phraseInPolicy + "\" . Consider clarifying the privacy policy." ;
-                     }
-                     if(OntologyOWLAPI.isAncestorOf(phraseMappedtoAPI.toLowerCase(), phraseInPolicy.toLowerCase(), ParagraphProcessor.ontology)){
-                         return "Possible weak privacy policy violation. \"" + phraseMappedtoAPI + "\" can be subsumed by \"" + phraseInPolicy + "\" . Consider clarifying the privacy policy." ;
+            List<String> possiblePhrases = new ArrayList<>();
+             for(String phraseMappedtoAPI : phrasesOfAPI) {
+                 if (OntologyOWLAPI.classDoesExists(phraseMappedtoAPI.toLowerCase(), OntologyOWLAPI.ontology)) {
+                     for (String phraseInPolicy : ParagraphProcessor.phrasesInPolicy) {
+                         if (OntologyOWLAPI.isEquivalent(phraseMappedtoAPI.toLowerCase(), phraseInPolicy.toLowerCase(), OntologyOWLAPI.ontology)) {
+                             return "\"" + phrasesOfAPI + "\" is synonym of \"" + phraseInPolicy + "\" . Consider clarifying the privacy policy.";
+                         }
+                         if (OntologyOWLAPI.isAncestorOf(phraseMappedtoAPI.toLowerCase(), phraseInPolicy.toLowerCase(), OntologyOWLAPI.ontology)) {
+                             possiblePhrases.add(phraseMappedtoAPI);
+                            //return "Possible weak privacy policy violation. \"" + phrasesOfAPI + "\" can be subsumed by \"" + phraseInPolicy + "\" . Consider clarifying the privacy policy.";
+                         }
                      }
                  }
              }
-        }
+            if(!possiblePhrases.isEmpty()){
+                String phrases = "";
+                for (String possiblePhrase: possiblePhrases){
+                    phrases += "\""+ possiblePhrase +"\" ";
+                }
+                return ("Possible weak privacy policy violation. Consider adding these phrases: "+phrases+" to your policy." );
+            }
+            else{
+                String strongPhrases = "";
+                for(String strongPhrase: phrasesOfAPI){
+                    strongPhrases += "\""+ strongPhrase +"\" ";
+                }
+                return ("Possible strong privacy violation. Consider adding these phrases: "+strongPhrases+" to your policy.");
+            }
+
+       }
+
         return null;
     }
 }
