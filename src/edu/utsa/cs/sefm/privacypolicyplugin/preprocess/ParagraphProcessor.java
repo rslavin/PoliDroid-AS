@@ -70,7 +70,7 @@ public class ParagraphProcessor {
                     else
                         newPhrase += "_" + word;
                 }
-                if (!phrasesInPolicy.contains(newPhrase))
+                if (!phrasesInPolicy.contains(newPhrase) && !newPhrase.equalsIgnoreCase("information"))
                     phrasesInPolicy.add(newPhrase);
             }
         }

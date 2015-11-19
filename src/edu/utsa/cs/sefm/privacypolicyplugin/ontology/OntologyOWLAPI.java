@@ -139,14 +139,14 @@ public class OntologyOWLAPI {
         LinkedList<String> q = new LinkedList<String>();
         for (OWLClass u : ontology.getClassesInSignature()) { // method defined in Graph class. not in java APIs
             // set all states as unvisited
-            map.put(u.toString().substring(u.toString().indexOf('#')+1, u.toString().indexOf('>')), unvisited);
+            map.put(u.toString().toLowerCase().substring(u.toString().indexOf('#')+1, u.toString().toLowerCase().indexOf('>')), unvisited);
         }
 	    /*
 	     * start.state = State.Visiting; // start was passed in
            q.add(start); //add start onto stack.
 	     */
-        if(map.containsKey(child)){
-            map.put(child, visiting);
+        if(map.containsKey(child.toLowerCase())){
+            map.put(child.toLowerCase(), visiting);
             q.add(child);
             String curr;
             while(!q.isEmpty()) { // while q is not empty
@@ -156,18 +156,18 @@ public class OntologyOWLAPI {
                     List<String> parentList = getParentList(curr, ontology);
                     for(String parent : parentList)// for each node v adjacent t
                     {
-                        if(map.get(parent).contentEquals(unvisited)){
+                        if(map.get(parent.toLowerCase()).contentEquals(unvisited)){
                             if (parent.equalsIgnoreCase(ancestor)){
                                 return true; // there is a path
                             }
                             else {
-                                map.put(parent, visiting);
-                                q.add(parent);// add each adjacent node current parent to q
+                                map.put(parent.toLowerCase(), visiting);
+                                q.add(parent.toLowerCase());// add each adjacent node current parent to q
                             }
                         }
                     }
                 }
-                map.put(curr, visited);
+                map.put(curr.toLowerCase(), visited);
             }
         }
         return false;

@@ -86,18 +86,21 @@ public class PolicyViolationInspection extends LocalInspectionTool{
         return null;
 */
        List<String> phrasesOfAPI = isViolation(fullName.toLowerCase());
-       // List<String> possiblePhrases = new ArrayList<>();
         if(! phrasesOfAPI.isEmpty()){
             List<String> possiblePhrases = new ArrayList<>();
              for(String phraseMappedtoAPI : phrasesOfAPI) {
-                 if (OntologyOWLAPI.classDoesExists(phraseMappedtoAPI.toLowerCase(), OntologyOWLAPI.ontology)) {
+
+                 //replace spaces with the underscores.
+                 if (OntologyOWLAPI.classDoesExists(phraseMappedtoAPI.toLowerCase().replace(" ", "_"), OntologyOWLAPI.ontology)) {
                      for (String phraseInPolicy : ParagraphProcessor.phrasesInPolicy) {
-                         if (OntologyOWLAPI.isEquivalent(phraseMappedtoAPI.toLowerCase(), phraseInPolicy.toLowerCase(), OntologyOWLAPI.ontology)) {
+                         if (OntologyOWLAPI.isEquivalent(phraseInPolicy.toLowerCase(), phraseMappedtoAPI.toLowerCase().replace(" ", "_"), OntologyOWLAPI.ontology)) {
                              return "\"" + phrasesOfAPI + "\" is synonym of \"" + phraseInPolicy + "\" . Consider clarifying the privacy policy.";
                          }
-                         if (OntologyOWLAPI.isAncestorOf(phraseMappedtoAPI.toLowerCase(), phraseInPolicy.toLowerCase(), OntologyOWLAPI.ontology)) {
-                             possiblePhrases.add(phraseMappedtoAPI);
-                            //return "Possible weak privacy policy violation. \"" + phrasesOfAPI + "\" can be subsumed by \"" + phraseInPolicy + "\" . Consider clarifying the privacy policy.";
+                         if (OntologyOWLAPI.isAncestorOf(phraseInPolicy.toLowerCase(), phraseMappedtoAPI.toLowerCase().replace(" ", "_"), OntologyOWLAPI.ontology)) {
+                             if(! possiblePhrases.contains(phraseMappedtoAPI)) {
+                                 possiblePhrases.add(phraseMappedtoAPI);
+                                 System.out.println("ancestor is :"+ phraseInPolicy);
+                             }
                          }
                      }
                  }
@@ -109,7 +112,7 @@ public class PolicyViolationInspection extends LocalInspectionTool{
                 }
                 return ("Possible weak privacy policy violation. Consider adding these phrases: "+phrases+" to your policy." );
             }
-            else{
+            if(possiblePhrases.isEmpty()){
                 String strongPhrases = "";
                 for(String strongPhrase: phrasesOfAPI){
                     strongPhrases += "\""+ strongPhrase +"\" ";
@@ -118,7 +121,6 @@ public class PolicyViolationInspection extends LocalInspectionTool{
             }
 
        }
-
         return null;
     }
 }
