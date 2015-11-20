@@ -43,7 +43,7 @@
         <!--text="MapFileChooser" description="Choose a mappings file.">-->
         <!--<add-to-group group-id="MainMenu" anchor="last"/>-->
         <!--</action>-->
-        <group id="PrivacyPolicy.menu" text="_Privacy Policy Checker" description="Privacy Policy Menu">
+        <group id="PrivacyPolicy.menu" text="_PoliDroid" description="Privacy Policy Menu">
             <add-to-group group-id="MainMenu" anchor="last"  />
             <action id="MapFileChooser" class="edu.utsa.cs.sefm.privacypolicyplugin.window.MapFileChooser"
                     text="Select _Mappings File" description="Choose a mappings file." />
