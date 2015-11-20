@@ -1,6 +1,6 @@
 <idea-plugin version="2">
     <id>edu.utsa.cs.sefm.privacypolicyplugin</id>
-    <name>Android Privacy Policy Verifier</name>
+    <name>PoliDroid - Privacy Policy Verification</name>
     <version>1.0</version>
     <vendor email="rocky.slavin@gmail.com" url="http://sefm.cs.utsa.edu">UTSA SEFM Research Group</vendor>
 
@@ -51,8 +51,6 @@
                     text="Select _Ontology File" description="Choose an ontology file." />
             <action id="PolicyFileChooser" class="edu.utsa.cs.sefm.privacypolicyplugin.window.PolicyFileChooser"
                     text="Select _Policy File" description="Choose a policy file." />
-            <action id="CheckSinks" class="edu.utsa.cs.sefm.privacypolicyplugin.flow.CheckSinks"
-                    text="_Verify Sinks" description="Check for information leaks to network." />
         </group>
     </actions>
 
