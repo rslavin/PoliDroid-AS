@@ -11,7 +11,6 @@ import edu.utsa.cs.sefm.privacypolicyplugin.ontology.OntologyOWLAPI;
 import edu.utsa.cs.sefm.privacypolicyplugin.preprocess.ParagraphProcessor;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
-import org.semanticweb.owlapi.model.OWLOntology;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,13 +23,13 @@ public class PolicyViolationInspection extends LocalInspectionTool{
     @NotNull
     @Override
     public String getDisplayName() {
-        return "Android Privacy Policy Violation Detector";
+        return "PoliDroid";
     }
 
     @NotNull
     @Override
     public String getShortName() {
-        return "AndroidPrivacyPolicy";
+        return "PoliDroid";
     }
 
     @Nls

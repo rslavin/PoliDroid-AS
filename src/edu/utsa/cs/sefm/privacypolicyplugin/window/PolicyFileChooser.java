@@ -12,9 +12,10 @@ import edu.utsa.cs.sefm.privacypolicyplugin.PolicyViolationAppComponent;
 import edu.utsa.cs.sefm.privacypolicyplugin.ontology.OntologyOWLAPI;
 import edu.utsa.cs.sefm.privacypolicyplugin.preprocess.HTMLUtils;
 import edu.utsa.cs.sefm.privacypolicyplugin.preprocess.ParagraphProcessor;
-import org.semanticweb.owlapi.model.OWLOntology;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.StringReader;
 
 /**
  * Created by Rocky on 10/18/2015.
@@ -26,14 +27,14 @@ public class PolicyFileChooser extends AnAction {
         VirtualFile file = FileChooser.chooseFile(FileChooserDescriptorFactory.createSingleFileNoJarsDescriptor(), project, null);
         PolicyViolationAppComponent comp = (PolicyViolationAppComponent) ApplicationManager.getApplication().getComponent("PolicyViolationAppComponent");
         String documentPlaintext = HTMLUtils.getText(file);
-        System.out.println(documentPlaintext);
+//        System.out.println(documentPlaintext);
         ParagraphProcessor paragraphProcessor = new ParagraphProcessor();
 
         String paragraphs = paragraphProcessor.processParagraphs(documentPlaintext);
-        System.out.println("Phrases in policy");
-        for(String elem : paragraphProcessor.phrasesInPolicy){
-            System.out.println(elem);
-        }
+//        System.out.println("Phrases in policy");
+//        for(String elem : paragraphProcessor.phrasesInPolicy){
+//            System.out.println(elem);
+//        }
 
         if (!comp.apis.isEmpty() && !OntologyOWLAPI.ontology.isEmpty())
             try {
