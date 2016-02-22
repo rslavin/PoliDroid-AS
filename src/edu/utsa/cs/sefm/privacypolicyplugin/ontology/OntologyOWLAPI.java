@@ -3,12 +3,10 @@ package edu.utsa.cs.sefm.privacypolicyplugin.ontology;
 /**
  * Created by Mitra on 11/15/2015.
  */
-import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
 import com.intellij.openapi.vfs.VirtualFile;
-import org.apache.log4j.lf5.util.Resource;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.AddAxiom;
 import org.semanticweb.owlapi.model.IRI;
@@ -47,17 +45,29 @@ public class OntologyOWLAPI {
         }catch (OWLException e) {
             e.printStackTrace();
         }
-        }
-        public static List<List<String>> ListOfOntologyPhrases(OWLOntology ontology){
+    }
+
+    /**
+     * returns all the phrases in the ontology
+     * @param ontology
+     * @return
+     */
+    public static List<List<String>> ListOfOntologyPhrases(OWLOntology ontology){
             for (OWLClass cls : ontology.getClassesInSignature()){
-                List sublist = Arrays.asList(cls.toString().substring(cls.toString().indexOf('#')+1, cls.toString().indexOf('>')).toLowerCase().split("_"));
-              allOntologyPhrases.add(sublist);
-                }
+                List sublist = Arrays.asList(cls.getIRI().toString().substring(cls.getIRI().toString().indexOf('#')+1).toLowerCase().split("_"));
+                allOntologyPhrases.add(sublist);
+            }
             return allOntologyPhrases;
-        }
+    }
+    /**
+     * checks the if the class exists in the ontology or not
+     * @param className
+     * @param ontology
+     * @return
+     */
     public static boolean classDoesExists(String className, OWLOntology ontology){
         for (OWLClass cls : ontology.getClassesInSignature()){
-            if (className.compareToIgnoreCase(cls.toString().substring(cls.toString().indexOf('#')+1, cls.toString().indexOf('>')))==0){
+            if (className.compareToIgnoreCase(cls.getIRI().toString().substring(cls.getIRI().toString().indexOf('#')+1))==0){
                 return true;
             }
         }
@@ -71,9 +81,9 @@ public class OntologyOWLAPI {
      */
     public static boolean isSubclassof(String child, String parent, OWLOntology ontology){
         for (OWLClass cls : ontology.getClassesInSignature()){
-            if (parent.compareToIgnoreCase(cls.toString().substring(cls.toString().indexOf('#')+1, cls.toString().indexOf('>')))==0){
+            if (parent.compareToIgnoreCase(cls.getIRI().toString().substring(cls.getIRI().toString().indexOf('#')+1))==0){
                 for (OWLClassExpression children : cls.getSubClasses(ontology)){
-                    if (child.compareToIgnoreCase(children.toString().substring(children.toString().indexOf('#')+1, children.toString().indexOf('>')))==0){
+                    if (child.compareToIgnoreCase(children.asOWLClass().getIRI().toString().substring(children.asOWLClass().getIRI().toString().indexOf('#')+1))==0){
                         return true;
                     }
                 }
@@ -94,9 +104,9 @@ public class OntologyOWLAPI {
             }
         }
         for(OWLClass cls : ontology.getClassesInSignature()){
-            if (ancestor.compareToIgnoreCase(cls.toString().substring(cls.toString().indexOf('#')+1, cls.toString().indexOf('>')))==0){
+            if (ancestor.compareToIgnoreCase(cls.getIRI().toString().substring(cls.getIRI().toString().indexOf('#')+1))==0){
                 for(OWLClassExpression synonyms : cls.getEquivalentClasses(ontology)){
-                    if (child.compareToIgnoreCase(synonyms.toString().substring(synonyms.toString().indexOf('#')+1, synonyms.toString().indexOf('>')))==0){
+                    if (child.compareToIgnoreCase(synonyms.asOWLClass().getIRI().toString().substring(synonyms.asOWLClass().getIRI().toString().indexOf('#')+1))==0){
                         return true;
                     }
                 }
@@ -112,16 +122,41 @@ public class OntologyOWLAPI {
     public static List<String> getParentList(String className, OWLOntology ontology){
         List<String> parentList =  new ArrayList<String>();
         for (OWLClass cls : ontology.getClassesInSignature()){
-            if (className.compareToIgnoreCase(cls.toString().substring(cls.toString().indexOf('#')+1, cls.toString().indexOf('>')))==0){
+            if (className.compareToIgnoreCase(cls.getIRI().toString().substring(cls.getIRI().toString().indexOf('#')+1))==0){
                 //We found the class
                 for (OWLClassExpression parent : cls.getSuperClasses(ontology)){
-                    if(!parentList.contains(parent.toString().substring(parent.toString().indexOf('#')+1, parent.toString().indexOf('>')))){
-                        parentList.add(parent.toString().substring(parent.toString().indexOf('#')+1, parent.toString().indexOf('>')));
+                    if(!parentList.contains(parent.asOWLClass().getIRI().toString().substring(parent.asOWLClass().getIRI().toString().indexOf('#')+1))){
+                        parentList.add(parent.asOWLClass().getIRI().toString().substring(parent.asOWLClass().getIRI().toString().indexOf('#')+1));
                     }
                 }
             }
         }
         return parentList;
+    }
+
+    /**
+     * Returns a list with all equivalents classes of the input parameter class
+     * @param className
+     * @param ontology
+     * @return
+     */
+    public static List<String> getEquivalentList(String className, OWLOntology ontology){
+        List<String> equivalentList =  new ArrayList<String>();
+        for (OWLClass cls : ontology.getClassesInSignature()){
+            //System.out.println(cls.getIRI().toString().substring(cls.getIRI().toString().indexOf('#')+1));
+            if (className.compareToIgnoreCase(cls.getIRI().toString().substring(cls.getIRI().toString().indexOf('#')+1))==0){
+                //We found the class
+                if (!cls.getEquivalentClasses(ontology).isEmpty()) {
+                    for (OWLClassExpression equiv : cls.getEquivalentClasses(ontology)) {
+                        //System.out.println("This is equiv to " + equiv.toString());
+                        if(!equivalentList.contains(equiv.asOWLClass().getIRI().toString().substring(equiv.asOWLClass().getIRI().toString().indexOf('#')+1)))
+                            equivalentList.add(equiv.asOWLClass().getIRI().toString().substring(equiv.asOWLClass().getIRI().toString().indexOf('#')+1));
+                    }
+                }
+            }
+        }
+
+        return equivalentList;
     }
     /**
      * checks if two class(phrase) has direct or indirect relationship in ontology based on DFS
@@ -139,7 +174,7 @@ public class OntologyOWLAPI {
         LinkedList<String> q = new LinkedList<String>();
         for (OWLClass u : ontology.getClassesInSignature()) { // method defined in Graph class. not in java APIs
             // set all states as unvisited
-            map.put(u.toString().toLowerCase().substring(u.toString().indexOf('#')+1, u.toString().toLowerCase().indexOf('>')), unvisited);
+            map.put(u.getIRI().toString().toLowerCase().substring(u.getIRI().toString().indexOf('#')+1), unvisited);
         }
 	    /*
 	     * start.state = State.Visiting; // start was passed in
@@ -171,5 +206,41 @@ public class OntologyOWLAPI {
             }
         }
         return false;
+    }
+    public static boolean getAncestorOf( String child, OWLOntology ontology) {
+        LinkedList<String> q = new LinkedList<String>();
+        for (OWLClass u : ontology.getClassesInSignature()) { // method defined in Graph class. not in java APIs
+            // set all states as unvisited
+            map.put(u.getIRI().toString().substring(u.getIRI().toString().indexOf('#')+1), unvisited);
+        }
+	    /*
+	     * start.state = State.Visiting; // start was passed in
+           q.add(start); //add start onto stack.
+	     */
+        if(map.containsKey(child)){
+            map.put(child, visiting);
+            q.add(child);
+            String curr;
+            while(!q.isEmpty()) { // while q is not empty
+                curr = q.removeFirst(); // i.e., pop(), LinkedList.removeFirst() is in java API
+                if (curr != null) { // if there is still something on q
+                    OWLClass currClass = fact.getOWLClass(IRI.create("#" + curr ));
+                    List<String> parentList = getParentList(curr, ontology);
+                    List<String> equivalentList = getEquivalentList(curr,ontology);
+                    List<String> adjacentNodes = new ArrayList<String>();
+                    adjacentNodes.addAll(parentList);
+                    adjacentNodes.addAll(equivalentList);
+                    for(String adjacentNode : adjacentNodes)// for each node v adjacent t
+                    {
+                        if(map.get(adjacentNode).contentEquals(unvisited)){
+                            map.put(adjacentNode, visiting);
+                            q.add(adjacentNode);// add each adjacent node current parent to q
+                        }
+                    }
+                }
+                map.put(curr, visited);
+            }
+        }
+        return true;
     }
 }
