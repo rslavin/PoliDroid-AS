@@ -23,8 +23,8 @@ public class HTMLUtils {
             System.out.println("Failed to read " + policy.getName() + ": " + e.toString());
             return null;
         }
-        if (policy.getName().endsWith(".txt")) {
-            System.out.println("file ends with txt");
+        if (!policy.getName().toLowerCase().endsWith(".html")) {
+            System.out.println("text file");
             return documentHtml;
         }
         Document htmlDoc = Jsoup.parse(documentHtml);
