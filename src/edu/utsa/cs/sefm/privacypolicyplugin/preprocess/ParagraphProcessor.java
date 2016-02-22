@@ -24,9 +24,8 @@ public class ParagraphProcessor {
             while (sc.hasNextLine()) {
                 currLine = sc.nextLine();
                 if(!currLine.isEmpty()){
-                    StanfordLemmatizer slem = new StanfordLemmatizer();
                     List<String> lemmaList = new LinkedList<String>();
-                    lemmaList = slem.lemmatize(currLine);
+                    lemmaList = Lemma.lemmatize(currLine);
                     for (String lemma : lemmaList){
                         String collectionVerb = containsWhichCollectVerb(lemma);
                         if(!collectionVerb.equals("VerbNotFound")){
