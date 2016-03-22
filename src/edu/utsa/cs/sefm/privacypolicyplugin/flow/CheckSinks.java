@@ -38,7 +38,5 @@ public class CheckSinks extends AnAction {
         } catch (Exception e1) {
             e1.printStackTrace();
         }
-
-
     }
 }

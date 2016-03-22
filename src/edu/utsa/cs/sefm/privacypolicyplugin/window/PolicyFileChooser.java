@@ -28,17 +28,13 @@ public class PolicyFileChooser extends AnAction {
         PolicyViolationAppComponent comp = (PolicyViolationAppComponent) ApplicationManager.getApplication().getComponent("PolicyViolationAppComponent");
         String documentPlaintext = HTMLUtils.getText(file);
 //        System.out.println(documentPlaintext);
-        ParagraphProcessor paragraphProcessor = new ParagraphProcessor();
-
-        String paragraphs = paragraphProcessor.processParagraphs(documentPlaintext);
-//        System.out.println("Phrases in policy");
-//        for(String elem : paragraphProcessor.phrasesInPolicy){
-//            System.out.println(elem);
-//        }
+        ParagraphProcessor paragraphProc = new ParagraphProcessor();
+        paragraphProc.processParagraphs(documentPlaintext);
+        paragraphProc.findPhrasesInOntology();
 
         if (!comp.apis.isEmpty() && !OntologyOWLAPI.ontology.isEmpty())
             try {
-                BufferedReader br = new BufferedReader(new StringReader(paragraphs));
+                BufferedReader br = new BufferedReader(new StringReader(documentPlaintext));
                 String line;
 
                 // TODO check if mappings exist, if not add dialog

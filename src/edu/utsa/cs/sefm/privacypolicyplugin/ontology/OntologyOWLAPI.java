@@ -52,12 +52,13 @@ public class OntologyOWLAPI {
      * @param ontology
      * @return
      */
-    public static List<List<String>> ListOfOntologyPhrases(OWLOntology ontology){
-            for (OWLClass cls : ontology.getClassesInSignature()){
-                List sublist = Arrays.asList(cls.getIRI().toString().substring(cls.getIRI().toString().indexOf('#')+1).toLowerCase().split("_"));
-                allOntologyPhrases.add(sublist);
-            }
-            return allOntologyPhrases;
+    public static List<String> ListOfOntologyPhrases(OWLOntology ontology){
+        List<String> allOntologyPhrases = new ArrayList<>();
+        for (OWLClass cls : ontology.getClassesInSignature()){
+            String phrase = cls.getIRI().toString().substring(cls.getIRI().toString().indexOf('#')+1).toLowerCase().replaceAll("_", " ");
+            allOntologyPhrases.add(phrase);
+        }
+        return allOntologyPhrases;
     }
     /**
      * checks the if the class exists in the ontology or not

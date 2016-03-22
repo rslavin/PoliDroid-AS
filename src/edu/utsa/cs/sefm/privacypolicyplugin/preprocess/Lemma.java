@@ -4,14 +4,14 @@
      * Created by Mitra on 11/14/2015.
      */
     import java.io.*;
-    import java.util.LinkedList;
-    import java.util.List;
+    import java.util.HashMap;
+    import java.util.Map;
 
     public class Lemma {
 
-        public static List<String> lemmatize(String currline) {
+        public static Map<String, String> lemmatize(String currline) {
             Runtime rt = Runtime.getRuntime();
-            final List<String> lemmas = new LinkedList<String>();
+            final Map<String,String> lemmas = new HashMap<String, String>();
             try {
                 final Process pr = rt.exec("java -cp NLP\\stanford-corenlp-3.5.2.jar;NLP\\stanford-corenlp-3.5.2-models.jar;NLP\\utsa-lemmatizer.jar;NLP; edu.utsa.cs.sefm.lemmatizer.Lemmatize ");
                 OutputStream outStream = pr.getOutputStream();
@@ -29,7 +29,8 @@
                         try {
                             while ((line = input.readLine()) != null){
                                 //System.out.println(line);
-                                lemmas.add(line);
+                                String[] parts = line.split(" = ");
+                                lemmas.put(parts[0], parts[1]);
                             }
                         } catch (IOException e1) {
                             e1.printStackTrace();

@@ -92,7 +92,7 @@ public class PolicyViolationInspection extends LocalInspectionTool{
                  //replace spaces with the underscores.
                  if (OntologyOWLAPI.classDoesExists(phraseMappedtoAPI.toLowerCase().replace(" ", "_"), OntologyOWLAPI.ontology)) {
                      for (String phraseInPolicy : ParagraphProcessor.phrasesInPolicy) {
-                         if (OntologyOWLAPI.isEquivalent(phraseInPolicy.toLowerCase(), phraseMappedtoAPI.toLowerCase().replace(" ", "_"), OntologyOWLAPI.ontology)) {
+                         if (OntologyOWLAPI.isEquivalent(phraseInPolicy.toLowerCase().replace(" ", "_"), phraseMappedtoAPI.toLowerCase().replace(" ", "_"), OntologyOWLAPI.ontology)) {
                              return "\"" + phrasesOfAPI + "\" is synonym of \"" + phraseInPolicy + "\" . Consider clarifying the privacy policy.";
                          }
                          if (OntologyOWLAPI.isAncestorOf(phraseInPolicy.toLowerCase(), phraseMappedtoAPI.toLowerCase().replace(" ", "_"), OntologyOWLAPI.ontology)) {
