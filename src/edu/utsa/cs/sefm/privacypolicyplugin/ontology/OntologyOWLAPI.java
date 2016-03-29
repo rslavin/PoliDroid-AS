@@ -20,7 +20,6 @@ import org.semanticweb.owlapi.model.OWLOntologyManager;
 public class OntologyOWLAPI {
     static OWLOntologyManager man;
     static OWLDataFactory fact;
-    public static List<List<String>> allOntologyPhrases = new ArrayList<List<String>>();
     static String unvisited = "unvisited" ;
     static String visited = "visited";
     static String visiting = "visiting" ;
@@ -28,6 +27,9 @@ public class OntologyOWLAPI {
     static List<AddAxiom> myList = new ArrayList<AddAxiom>();
     public static HashMap<String, String> map = new HashMap<String, String>();
     public static OWLOntology ontology;
+    public static List<String> ontologyPhrases = Collections.synchronizedList(new ArrayList<String>());
+    public static List<String> lemmaOntologyPhrases = Collections.synchronizedList(new LinkedList<String>());
+
     /**
      * loads the ontology from the specified file
      * @param ontologyFile

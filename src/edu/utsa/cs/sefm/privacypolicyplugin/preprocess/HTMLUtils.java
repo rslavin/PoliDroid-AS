@@ -1,5 +1,6 @@
 package edu.utsa.cs.sefm.privacypolicyplugin.preprocess;
 
+import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.vfs.VirtualFile;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -13,6 +14,7 @@ import java.io.InputStreamReader;
 public class HTMLUtils {
     public static String getText(VirtualFile policy) {
         String documentHtml = "";
+
         try {
             BufferedReader br = new BufferedReader(new InputStreamReader(policy.getInputStream(),"UTF-8"));
             String line;

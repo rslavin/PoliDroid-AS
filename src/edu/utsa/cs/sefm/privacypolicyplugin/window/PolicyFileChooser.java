@@ -4,8 +4,13 @@ import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DataKeys;
 import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.command.CommandProcessor;
+import com.intellij.openapi.editor.Document;
+import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.fileChooser.FileChooser;
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory;
+import com.intellij.openapi.fileEditor.FileDocumentManager;
+import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import edu.utsa.cs.sefm.privacypolicyplugin.PolicyViolationAppComponent;
@@ -23,14 +28,17 @@ import java.io.StringReader;
 public class PolicyFileChooser extends AnAction {
     public void actionPerformed(AnActionEvent e) {
 
-        Project project = e.getData(DataKeys.PROJECT);
+        final Project project = e.getData(DataKeys.PROJECT);
         VirtualFile file = FileChooser.chooseFile(FileChooserDescriptorFactory.createSingleFileNoJarsDescriptor(), project, null);
         PolicyViolationAppComponent comp = (PolicyViolationAppComponent) ApplicationManager.getApplication().getComponent("PolicyViolationAppComponent");
-        String documentPlaintext = HTMLUtils.getText(file);
-//        System.out.println(documentPlaintext);
+        final String documentPlaintext = HTMLUtils.getText(file);
         ParagraphProcessor paragraphProc = new ParagraphProcessor();
         paragraphProc.processParagraphs(documentPlaintext);
         paragraphProc.findPhrasesInOntology();
+        System.out.println("\nPhrases in the ontology and privacy policy are:");
+        for (String phraseInPolicy : ParagraphProcessor.ontologyPhrasesInPolicy) {
+            System.out.println(phraseInPolicy);
+        }
 
         if (!comp.apis.isEmpty() && !OntologyOWLAPI.ontology.isEmpty())
             try {

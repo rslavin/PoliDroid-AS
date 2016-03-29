@@ -10,9 +10,8 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import edu.utsa.cs.sefm.privacypolicyplugin.PolicyViolationAppComponent;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+
+import java.io.*;
 import java.util.ArrayList;
 
 /**
