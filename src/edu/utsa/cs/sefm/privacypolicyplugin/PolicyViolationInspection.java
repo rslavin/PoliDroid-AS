@@ -9,6 +9,7 @@ import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.PsiMethodCallExpression;
 import edu.utsa.cs.sefm.privacypolicyplugin.ontology.OntologyOWLAPI;
 import edu.utsa.cs.sefm.privacypolicyplugin.preprocess.ParagraphProcessor;
+import edu.utsa.cs.sefm.privacypolicyplugin.specifications.Specifications;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 
@@ -84,40 +85,50 @@ public class PolicyViolationInspection extends LocalInspectionTool{
         }
         return null;
 */
-       List<String> phrasesOfAPI = isViolation(fullName.toLowerCase());
+        List<String> phrasesOfAPI = isViolation(fullName.toLowerCase());
         if(! phrasesOfAPI.isEmpty()){
-            List<String> possiblePhrases = new ArrayList<>();
-             for(String phraseMappedtoAPI : phrasesOfAPI) {
+            for(String phraseMappedToApi: phrasesOfAPI) {
+                if (ParagraphProcessor.ontologyPhrasesInPolicy.contains(phraseMappedToApi.replaceAll("_", " "))) {
+                    phrasesOfAPI.remove(phraseMappedToApi);
+                    continue;
+                }
+                for (String phraseInPolicy : ParagraphProcessor.ontologyPhrasesInPolicy) {
+                    if (OntologyOWLAPI.isEquivalent(phraseInPolicy.toLowerCase().replaceAll(" ", "_"), phraseMappedToApi.toLowerCase().replaceAll(" ", "_"), OntologyOWLAPI.ontology)) {
+                        phrasesOfAPI.remove(phraseMappedToApi);
+                        break;
+                    }
+                }
+            }
+            if(!phrasesOfAPI.isEmpty()) {
+                List<String> possiblePhrases = new ArrayList<>();
+                for (String phraseMappedtoAPI : phrasesOfAPI) {
+                    if (OntologyOWLAPI.classDoesExists(phraseMappedtoAPI.toLowerCase().replaceAll(" ", "_"), OntologyOWLAPI.ontology)) {
+                        for (String phraseInPolicy : ParagraphProcessor.ontologyPhrasesInPolicy) {
+                            if (OntologyOWLAPI.isAncestorOf(phraseInPolicy.toLowerCase().replaceAll(" ", "_"), phraseMappedtoAPI.toLowerCase().replaceAll(" ", "_"), OntologyOWLAPI.ontology)) {
+                                if (!possiblePhrases.contains(phraseMappedtoAPI)) {
+                                    possiblePhrases.add(phraseMappedtoAPI.replaceAll("_", " "));
+                                    System.out.println("ancestor is :" + phraseInPolicy);
+                                }
+                            }
+                        }
+                    }
+                }
+                if(!possiblePhrases.isEmpty()){
+                    String phrases = "";
+                    for (String possiblePhrase: possiblePhrases){
+                        phrases += "\""+ possiblePhrase +"\" ";
+                    }
+                    return ("Possible weak privacy policy violation. Consider adding these phrases: "+phrases+" to your policy." );
+                }
+                if(possiblePhrases.isEmpty()){
+                    String strongPhrases = "";
+                    for(String strongPhrase: phrasesOfAPI){
+                        strongPhrases += "\""+ strongPhrase +"\" ";
+                    }
+                    return ("Possible strong privacy violation. Consider adding these phrases: "+strongPhrases+" to your policy.");
+                }
+            }
 
-                 //replace spaces with the underscores.
-                 if (OntologyOWLAPI.classDoesExists(phraseMappedtoAPI.toLowerCase().replace(" ", "_"), OntologyOWLAPI.ontology)) {
-                     for (String phraseInPolicy : ParagraphProcessor.ontologyPhrasesInPolicy) {
-                         if (OntologyOWLAPI.isEquivalent(phraseInPolicy.toLowerCase().replace(" ", "_"), phraseMappedtoAPI.toLowerCase().replace(" ", "_"), OntologyOWLAPI.ontology)) {
-                             return "\"" + phrasesOfAPI + "\" is synonym of \"" + phraseInPolicy + "\" . Consider clarifying the privacy policy.";
-                         }
-                         if (OntologyOWLAPI.isAncestorOf(phraseInPolicy.toLowerCase(), phraseMappedtoAPI.toLowerCase().replace(" ", "_"), OntologyOWLAPI.ontology)) {
-                             if(! possiblePhrases.contains(phraseMappedtoAPI)) {
-                                 possiblePhrases.add(phraseMappedtoAPI);
-                                 System.out.println("ancestor is :"+ phraseInPolicy);
-                             }
-                         }
-                     }
-                 }
-             }
-            if(!possiblePhrases.isEmpty()){
-                String phrases = "";
-                for (String possiblePhrase: possiblePhrases){
-                    phrases += "\""+ possiblePhrase +"\" ";
-                }
-                return ("Possible weak privacy policy violation. Consider adding these phrases: "+phrases+" to your policy." );
-            }
-            if(possiblePhrases.isEmpty()){
-                String strongPhrases = "";
-                for(String strongPhrase: phrasesOfAPI){
-                    strongPhrases += "\""+ strongPhrase +"\" ";
-                }
-                return ("Possible strong privacy violation. Consider adding these phrases: "+strongPhrases+" to your policy.");
-            }
 
        }
         return null;
