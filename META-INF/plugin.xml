@@ -51,6 +51,8 @@
                     text="Select _Ontology File" description="Choose an ontology file." />
             <action id="PolicyFileChooser" class="edu.utsa.cs.sefm.privacypolicyplugin.window.PolicyFileChooser"
                     text="Select _Policy File" description="Choose a policy file." />
+            <action id="SpecificationDialog" class="edu.utsa.cs.sefm.privacypolicyplugin.window.SpecificationDialogAction"
+                    text="Generate _Specifications" description="Generate privacy specifications." />
         </group>
     </actions>
 
