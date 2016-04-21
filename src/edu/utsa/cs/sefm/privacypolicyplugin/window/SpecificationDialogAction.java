@@ -30,7 +30,9 @@ public class SpecificationDialogAction extends AnAction {
         String[] actions = {"collect", "share"};
         String[] phrases = {"location", "geolocation"};
 
-        addRow(sd, 0, "Location.location.getLongitude()", actions, phrases);
+        addRow(sd, 0, "Location.getLongitude()", actions, phrases);
+        addRow(sd, 1, "Location.getLatitude()", actions, phrases);
+        addRow(sd, 2, "LocationManager.getLastKnownLocation()", actions, phrases);
 
     }
 
