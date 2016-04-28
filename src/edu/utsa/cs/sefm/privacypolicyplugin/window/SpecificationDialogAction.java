@@ -18,7 +18,8 @@ public class SpecificationDialogAction extends AnAction {
     List<JTextField> purposeRows;
 
     public void actionPerformed(AnActionEvent e) {
-        SpecificationDialog sd = new SpecificationDialog();
+//        SpecificationDialog sd = new SpecificationDialog();
+        SpecificationIterator si = new SpecificationIterator();
 
         // store columns by row
         methodRows = new ArrayList<>();
@@ -30,9 +31,9 @@ public class SpecificationDialogAction extends AnAction {
         String[] actions = {"collect", "share"};
         String[] phrases = {"location", "geolocation"};
 
-        addRow(sd, 0, "Location.getLongitude()", actions, phrases);
-        addRow(sd, 1, "Location.getLatitude()", actions, phrases);
-        addRow(sd, 2, "LocationManager.getLastKnownLocation()", actions, phrases);
+//        addRow(sd, 0, "Location.getLongitude()", actions, phrases);
+//        addRow(sd, 1, "Location.getLatitude()", actions, phrases);
+//        addRow(sd, 2, "LocationManager.getLastKnownLocation()", actions, phrases);
 
     }
 
