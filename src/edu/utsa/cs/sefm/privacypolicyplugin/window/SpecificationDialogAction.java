@@ -5,7 +5,6 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.ui.ComboBox;
 
 import javax.swing.*;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -16,20 +15,21 @@ public class SpecificationDialogAction extends AnAction {
     List<JComboBox> actionRows;
     List<JComboBox> phraseRows;
     List<JTextField> purposeRows;
+    SpecificationIterator si;
 
     public void actionPerformed(AnActionEvent e) {
 //        SpecificationDialog sd = new SpecificationDialog();
-        SpecificationIterator si = new SpecificationIterator();
+        si = new SpecificationIterator();
 
         // store columns by row
-        methodRows = new ArrayList<>();
-        actionRows = new ArrayList<>();
-        phraseRows = new ArrayList<>();
-        purposeRows = new ArrayList<>();
+//        methodRows = new ArrayList<>();
+//        actionRows = new ArrayList<>();
+//        phraseRows = new ArrayList<>();
+//        purposeRows = new ArrayList<>();
         // add method list. each column will need to be filled
         // actionCol, methodCol, phraseCol, purposeCol
-        String[] actions = {"collect", "share"};
-        String[] phrases = {"location", "geolocation"};
+//        String[] actions = {"collect", "share"};
+//        String[] phrases = {"location", "geolocation"};
 
 //        addRow(sd, 0, "Location.getLongitude()", actions, phrases);
 //        addRow(sd, 1, "Location.getLatitude()", actions, phrases);

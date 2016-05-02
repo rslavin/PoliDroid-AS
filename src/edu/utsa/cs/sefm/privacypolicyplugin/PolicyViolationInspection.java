@@ -9,7 +9,6 @@ import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.PsiMethodCallExpression;
 import edu.utsa.cs.sefm.privacypolicyplugin.ontology.OntologyOWLAPI;
 import edu.utsa.cs.sefm.privacypolicyplugin.preprocess.ParagraphProcessor;
-import edu.utsa.cs.sefm.privacypolicyplugin.specifications.Specifications;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 
@@ -119,8 +118,7 @@ public class PolicyViolationInspection extends LocalInspectionTool{
                         phrases += "\""+ possiblePhrase +"\" ";
                     }
                     return ("Possible weak privacy policy violation. Consider adding these phrases: "+phrases+" to your policy." );
-                }
-                if(possiblePhrases.isEmpty()){
+                }else{
                     String strongPhrases = "";
                     for(String strongPhrase: phrasesOfAPI){
                         strongPhrases += "\""+ strongPhrase +"\" ";
