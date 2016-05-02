@@ -13,7 +13,12 @@ import java.util.*;
 
 public class ParagraphProcessor {
     private static List<String> nounPhrasesPermutations = Collections.synchronizedList(new ArrayList<String>());
-    private static List<String> collectVerbList = Collections.synchronizedList(Arrays.asList("store", "collect", "receive", "aggregate", "send", "record", "acquire", "obtain", "use", "transmit", "access", "log", "retain"));
+    //private static List<String> collectVerbList = Collections.synchronizedList(Arrays.asList("store", "collect", "receive",
+           // "aggregate", "send", "record", "acquire", "obtain", "use", "transmit", "access", "log", "retain"));
+    private static List<String> verbList = Collections.synchronizedList(Arrays.asList("collect", "obtain", "receive", "provide",
+            "gather", "access", "acquire", "combine", "review", "submit", "log", "use", "process", "utilize", "monitor",
+            "store", "retain", "maintain", "keep", "record", "save", "share", "disclose", "send", "transfer", "display",
+            "post", "deliver", "distribute", "notify", "rent"));
     public static List<String> ontologyPhrasesInPolicy = Collections.synchronizedList(new ArrayList<String>());
     public static List<String> paragraphs = Collections.synchronizedList(new ArrayList<String>());
 
@@ -306,7 +311,7 @@ public class ParagraphProcessor {
      */
     public static boolean containsCollectVerb(String phrase) {
         //String def = "VerbNotFound";
-        for (String verb : collectVerbList) {
+        for (String verb : verbList) {
             if (phrase.equalsIgnoreCase(verb)) {
                 /*if verb.equalsIgnoreCase("use"){
 

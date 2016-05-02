@@ -192,15 +192,19 @@ public class OntologyOWLAPI {
                 if (curr != null) { // if there is still something on q
                     OWLClass currClass = fact.getOWLClass(IRI.create("#" + curr ));
                     List<String> parentList = getParentList(curr, ontology);
-                    for(String parent : parentList)// for each node v adjacent t
+                    List<String> equivalentList = getEquivalentList(curr,ontology);
+                    List<String> adjacentNodes = new ArrayList<String>();
+                    adjacentNodes.addAll(parentList);
+                    adjacentNodes.addAll(equivalentList);
+                    for(String adjacentNode : adjacentNodes)// for each node v adjacent t
                     {
-                        if(map.get(parent.toLowerCase()).contentEquals(unvisited)){
-                            if (parent.equalsIgnoreCase(ancestor)){
+                        if(map.get(adjacentNode.toLowerCase()).contentEquals(unvisited)){
+                            if (adjacentNode.equalsIgnoreCase(ancestor)){
                                 return true; // there is a path
                             }
                             else {
-                                map.put(parent.toLowerCase(), visiting);
-                                q.add(parent.toLowerCase());// add each adjacent node current parent to q
+                                map.put(adjacentNode.toLowerCase(), visiting);
+                                q.add(adjacentNode.toLowerCase());// add each adjacent node current parent to q
                             }
                         }
                     }
