@@ -25,13 +25,15 @@ public class PolicyViolationAppComponent implements ApplicationComponent {
         POLICY_PHRASES = Arrays.asList("another test");
     }
 
-    public List<Api> apis;
+    public List<Api> apis; // all methods from mappings
     public Set<String> phrases;
+    public Set<String> apisInCode; // unique list of api methods that we have mappings for in the code
 
 
     public PolicyViolationAppComponent() {
         apis = new ArrayList<>();
         phrases = new HashSet<>();
+        apisInCode = new HashSet<>();
     }
 
     /**
@@ -71,7 +73,8 @@ public class PolicyViolationAppComponent implements ApplicationComponent {
     }
 
     /**
-     * Adds an API-phrase mapping to the plugin's database.
+     * Adds an API-phrase mapping to the plugin's database. Call this from the mapping
+     * file reader.
      * @param api
      * @param phrase
      */
@@ -84,7 +87,6 @@ public class PolicyViolationAppComponent implements ApplicationComponent {
             }
         }
         apis.add(new Api(api, phrase));
-        return;
     }
 
     /**
@@ -110,6 +112,11 @@ public class PolicyViolationAppComponent implements ApplicationComponent {
      */
     public List<String> isViolation(String api){
         for (Api existingApi : apis) {
+            // add it to list of apis found in the code
+            if(existingApi.api.toLowerCase().equals(api.toLowerCase()))
+                apisInCode.add(api);
+
+            // check if it's a violation
             if (!existingApi.allowed && existingApi.api.toLowerCase().equals(api.toLowerCase())) {
                 return existingApi.phrases;
             }
