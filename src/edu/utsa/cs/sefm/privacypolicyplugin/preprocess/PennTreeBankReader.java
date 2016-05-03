@@ -62,7 +62,8 @@ public class PennTreeBankReader {
         int state = 0;
         List<String> tokenList = tokenize();
         if (!tokenList.get(1).equalsIgnoreCase("root")){
-            throw new IllegalArgumentException("the ptb should start with root as the first tag");
+            //throw new IllegalArgumentException("the ptb should start with root as the first tag");
+             return new DefaultTreeModel(null);
         }
         //tokenList.remove(0);
         //tokenList.remove(1);

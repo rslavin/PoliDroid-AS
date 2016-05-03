@@ -36,11 +36,14 @@ public class ParagraphProcessor {
             System.out.println(parseTree);
         }
         for(String parseTree : parsedParagraphs){
+            if (parseTree.startsWith("(X"))
+                continue;
             PennTreeBankReader treeReader = new PennTreeBankReader(parseTree);
             try{
                 DefaultTreeModel tree = treeReader.ptbTreeBuilder();
                 if (tree == null) {
                     System.out.println("null");
+                    continue;
                 }
                 DefaultMutableTreeNode rootNode = (DefaultMutableTreeNode) tree.getRoot();
                 getVerbPhrases(rootNode);
