@@ -139,19 +139,7 @@ public class ParagraphProcessor {
                                 }
                             }
                         }
-                        else {
-                            int start = 0;
-                            do {
-                                final int end = Math.min(refinedNounPhrases.size(), start + 7);
-                                temp = nounPhraseProcess(refinedNounPhrases.subList(start,end));
-                                for (String tm : temp) {
-                                    if (!nounPhrasesPermutations.contains(tm)) {
-                                        nounPhrasesPermutations.add(tm);
-                                    }
-                                }
-                                start = end;
-                            } while (start < refinedNounPhrases.size());
-                        }
+                        
                     }
                 }
 
