@@ -25,7 +25,7 @@ public class PolicyViolationAppComponent implements ApplicationComponent {
         POLICY_PHRASES = Arrays.asList("another test");
     }
 
-    public List<Api> apis;
+    public List<Api> apis; // all methods from mappings
     public Set<String> phrases;
     public Set<String> apisInCode; // unique list of api methods that we have mappings for in the code
 

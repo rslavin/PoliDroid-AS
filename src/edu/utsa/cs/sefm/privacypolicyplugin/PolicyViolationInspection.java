@@ -73,9 +73,10 @@ public class PolicyViolationInspection extends LocalInspectionTool{
     }
 
     private String getViolation(PsiMethodCallExpression expression){
-        String className = expression.resolveMethod().getContainingClass().getQualifiedName();
-        String methodName = expression.getMethodExpression().getReferenceName().toString();
-        String fullName = className + "." + methodName;
+        try {
+            String className = expression.resolveMethod().getContainingClass().getQualifiedName();
+            String methodName = expression.getMethodExpression().getReferenceName().toString();
+            String fullName = className + "." + methodName;
 
         /*String phrase = isViolation(fullName.toLowerCase());
         if(phrase.length() > 0) {
@@ -84,51 +85,54 @@ public class PolicyViolationInspection extends LocalInspectionTool{
         }
         return null;
 */
-        List<String> phrasesOfAPI = isViolation(fullName.toLowerCase());
-        if(! phrasesOfAPI.isEmpty()){
-            for(String phraseMappedToApi: phrasesOfAPI) {
-                if (ParagraphProcessor.ontologyPhrasesInPolicy.contains(phraseMappedToApi.replaceAll("_", " "))) {
-                    phrasesOfAPI.remove(phraseMappedToApi);
-                    continue;
-                }
-                for (String phraseInPolicy : ParagraphProcessor.ontologyPhrasesInPolicy) {
-                    if (OntologyOWLAPI.isEquivalent(phraseInPolicy.toLowerCase().replaceAll(" ", "_"), phraseMappedToApi.toLowerCase().replaceAll(" ", "_"), OntologyOWLAPI.ontology)) {
+            List<String> phrasesOfAPI = isViolation(fullName.toLowerCase());
+            if (!phrasesOfAPI.isEmpty()) {
+                for (String phraseMappedToApi : phrasesOfAPI) {
+                    if (ParagraphProcessor.ontologyPhrasesInPolicy.contains(phraseMappedToApi.replaceAll("_", " "))) {
                         phrasesOfAPI.remove(phraseMappedToApi);
-                        break;
+                        continue;
+                    }
+                    for (String phraseInPolicy : ParagraphProcessor.ontologyPhrasesInPolicy) {
+                        if (OntologyOWLAPI.isEquivalent(phraseInPolicy.toLowerCase().replaceAll(" ", "_"), phraseMappedToApi.toLowerCase().replaceAll(" ", "_"), OntologyOWLAPI.ontology)) {
+                            phrasesOfAPI.remove(phraseMappedToApi);
+                            break;
+                        }
                     }
                 }
-            }
-            if(!phrasesOfAPI.isEmpty()) {
-                List<String> possiblePhrases = new ArrayList<>();
-                for (String phraseMappedtoAPI : phrasesOfAPI) {
-                    if (OntologyOWLAPI.classDoesExists(phraseMappedtoAPI.toLowerCase().replaceAll(" ", "_"), OntologyOWLAPI.ontology)) {
-                        for (String phraseInPolicy : ParagraphProcessor.ontologyPhrasesInPolicy) {
-                            if (OntologyOWLAPI.isAncestorOf(phraseInPolicy.toLowerCase().replaceAll(" ", "_"), phraseMappedtoAPI.toLowerCase().replaceAll(" ", "_"), OntologyOWLAPI.ontology)) {
-                                if (!possiblePhrases.contains(phraseMappedtoAPI)) {
-                                    possiblePhrases.add(phraseMappedtoAPI.replaceAll("_", " "));
-                                    System.out.println("ancestor is :" + phraseInPolicy);
+                if (!phrasesOfAPI.isEmpty()) {
+                    List<String> possiblePhrases = new ArrayList<>();
+                    for (String phraseMappedtoAPI : phrasesOfAPI) {
+                        if (OntologyOWLAPI.classDoesExists(phraseMappedtoAPI.toLowerCase().replaceAll(" ", "_"), OntologyOWLAPI.ontology)) {
+                            for (String phraseInPolicy : ParagraphProcessor.ontologyPhrasesInPolicy) {
+                                if (OntologyOWLAPI.isAncestorOf(phraseInPolicy.toLowerCase().replaceAll(" ", "_"), phraseMappedtoAPI.toLowerCase().replaceAll(" ", "_"), OntologyOWLAPI.ontology)) {
+                                    if (!possiblePhrases.contains(phraseMappedtoAPI)) {
+                                        possiblePhrases.add(phraseMappedtoAPI.replaceAll("_", " "));
+                                        System.out.println("ancestor is :" + phraseInPolicy);
+                                    }
                                 }
                             }
                         }
                     }
-                }
-                if(!possiblePhrases.isEmpty()){
-                    String phrases = "";
-                    for (String possiblePhrase: possiblePhrases){
-                        phrases += "\""+ possiblePhrase +"\" ";
+                    if (!possiblePhrases.isEmpty()) {
+                        String phrases = "";
+                        for (String possiblePhrase : possiblePhrases) {
+                            phrases += "\"" + possiblePhrase + "\" ";
+                        }
+                        return ("Possible weak privacy policy violation. Consider adding these phrases: " + phrases + " to your policy.");
+                    } else {
+                        String strongPhrases = "";
+                        for (String strongPhrase : phrasesOfAPI) {
+                            strongPhrases += "\"" + strongPhrase + "\" ";
+                        }
+                        return ("Possible strong privacy violation. Consider adding these phrases: " + strongPhrases + " to your policy.");
                     }
-                    return ("Possible weak privacy policy violation. Consider adding these phrases: "+phrases+" to your policy." );
-                }else{
-                    String strongPhrases = "";
-                    for(String strongPhrase: phrasesOfAPI){
-                        strongPhrases += "\""+ strongPhrase +"\" ";
-                    }
-                    return ("Possible strong privacy violation. Consider adding these phrases: "+strongPhrases+" to your policy.");
                 }
+
+
             }
-
-
-       }
+        }catch(Exception e){
+            return null;
+        }
         return null;
     }
 }
