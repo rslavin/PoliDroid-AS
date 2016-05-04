@@ -124,11 +124,24 @@ public class ParagraphProcessor {
                         //Refine the noun phrases
                         //List<String> of a noun phrase permutations
                         List<String> refinedNounPhrases = new ArrayList<String>();
+                        List<String> refinedNouns = new ArrayList<>();
+                        List<String> temp = new ArrayList<>();
                         for (String nounPhrase : nounPhrases) {
                             //refining each noun phrase
-                            refinedNounPhrases.addAll(nounPhraseRefinement(nounPhrase));
+                            refinedNouns = nounPhraseRefinement(nounPhrase);
+                            if(refinedNouns.size()<3){
+                                temp = nounPhraseProcess(refinedNouns);
+                                for (String tm : temp) {
+                                    if (!nounPhrasesPermutations.contains(tm)) {
+                                        nounPhrasesPermutations.add(tm);
+                                    }
+                                }
+                                temp.clear();
+                            }
+                            refinedNounPhrases.addAll(refinedNouns);
+                            refinedNouns.clear();
                         }
-                        List<String> temp = new ArrayList<>();
+
                         System.out.println("refined Noun Phrase:" + refinedNounPhrases);
                         //The powerSet generates 2^n sets. If the input set is more than a limited number the program cannot handle generating powerSet
                         if (refinedNounPhrases.size() < 8) {
@@ -138,8 +151,8 @@ public class ParagraphProcessor {
                                     nounPhrasesPermutations.add(tm);
                                 }
                             }
+                            temp.clear();
                         }
-                        
                     }
                 }
 
@@ -161,7 +174,7 @@ public class ParagraphProcessor {
         List<String> lemmaNounPhrase = new ArrayList<>();
         Map<String, String> lemma = new HashMap<>();
         lemma = Lemmatizer.lemmatizeRMap(nounPhrase);
-        System.out.println("Noun phrase to be lemmatized: " + nounPhrase);
+        System.out.println("\nNoun phrase to be lemmatized: " + nounPhrase);
         for (Map.Entry element : lemma.entrySet()) {
             System.out.println("lemmatized noun phrase :" + element.getKey() + " ,with the tag: " + element.getValue());
             if (element.getValue().toString().startsWith("nn")) {
