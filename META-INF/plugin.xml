@@ -40,7 +40,7 @@
         <!-- Add your actions here -->
 
         <!--<action id="MapFileChooser" class="MapFileChooser"-->
-        <!--text="MapFileChooser" description="Choose a mappings file.">-->
+        <!--text="MapFileChooser" description="Choose a models file.">-->
         <!--<add-to-group group-id="MainMenu" anchor="last"/>-->
         <!--</action>-->
         <group id="PrivacyPolicy.menu" text="_PoliDroid" description="Privacy Policy Menu">

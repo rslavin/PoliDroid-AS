@@ -2,7 +2,8 @@ package edu.utsa.cs.sefm.privacypolicyplugin.window;
 
 import com.intellij.openapi.application.ApplicationManager;
 import edu.utsa.cs.sefm.privacypolicyplugin.PolicyViolationAppComponent;
-import edu.utsa.cs.sefm.privacypolicyplugin.mappings.Api;
+import edu.utsa.cs.sefm.privacypolicyplugin.models.Api;
+import edu.utsa.cs.sefm.privacypolicyplugin.models.Specification;
 
 import javax.swing.*;
 import java.awt.*;
@@ -14,7 +15,7 @@ import java.awt.event.WindowEvent;
  * Created by Rocky on 4/28/2016.
  */
 public class SpecificationIterator extends JFrame {
-    public static final String[] VERBS = {"Collect", "Share", "Used only on device"};
+    public static final String[] VERBS = {"COLLECTED", "SHARED", "ACCESSED"};
     private JLabel instructions;
     private JPanel formPanel;
     private JPanel instructionsPanel;
@@ -72,12 +73,33 @@ public class SpecificationIterator extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 // store things
+                storeFields();
 
                 // populate fields
                 populateFields();
 
             }
         });
+    }
+
+    private void storeFields() {
+        if (comp.specifications != null) {
+            Specification spec = comp.findSpec(methodLabel.getText());
+            if (spec == null)
+                spec = new Specification(methodLabel.getText());
+            spec.setPhrase((String) phraseSelect.getSelectedItem());
+            spec.setVerb((String) verbSelect.getSelectedItem());
+            spec.setNecessaryBusiness((String) necessaryBusinessSelect.getSelectedItem());
+            spec.setNecessaryFunctionality((String) necessaryFunctionalitySelect.getSelectedItem());
+            spec.setStore((String) storeSelect.getSelectedItem());
+            spec.setShare((String) shareSelect.getSelectedItem());
+            spec.setHow(howField.getText());
+            spec.setHowLong(howLongField.getText());
+            spec.setShareHow(shareHowField.getText());
+            spec.setWho(whoField.getText());
+
+            comp.specifications.add(spec);
+        }
     }
 
     private void populateFields() {
@@ -104,6 +126,12 @@ public class SpecificationIterator extends JFrame {
             setYesNoCombo(necessaryBusinessSelect);
             setYesNoCombo(storeSelect);
             setYesNoCombo(shareSelect);
+
+            // fields
+            howField.setText("");
+            howLongField.setText("");
+            shareHowField.setText("");
+            whoField.setText("");
 
         } else {
             // check if there has been any data saved. If not, then no methods were found

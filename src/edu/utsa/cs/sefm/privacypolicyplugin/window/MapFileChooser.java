@@ -10,8 +10,9 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import edu.utsa.cs.sefm.privacypolicyplugin.PolicyViolationAppComponent;
 
-
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 
 /**
@@ -27,16 +28,16 @@ public class MapFileChooser extends AnAction {
             BufferedReader br = new BufferedReader(new InputStreamReader(file.getInputStream()));
             String line;
 
-            // clear existing mappings
+            // clear existing models
             comp.apis = new ArrayList<>();
 
-            // read in new mappings
+            // read in new models
             while ((line = br.readLine()) != null) {
                 parseLine(comp, line);
             }
             br.close();
         } catch (IOException e1) {
-            System.err.println("Error parsing mappings");
+            System.err.println("Error parsing models");
             e1.printStackTrace();
         }
     }

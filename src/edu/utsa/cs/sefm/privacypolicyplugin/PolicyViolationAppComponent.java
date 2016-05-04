@@ -1,7 +1,8 @@
 package edu.utsa.cs.sefm.privacypolicyplugin;
 
 import com.intellij.openapi.components.ApplicationComponent;
-import edu.utsa.cs.sefm.privacypolicyplugin.mappings.Api;
+import edu.utsa.cs.sefm.privacypolicyplugin.models.Api;
+import edu.utsa.cs.sefm.privacypolicyplugin.models.Specification;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
@@ -16,7 +17,7 @@ public class PolicyViolationAppComponent implements ApplicationComponent {
 
     static {
         ALL_MAPPINGS = new HashMap<>();
-        // test mappings
+        // test models
         ALL_MAPPINGS.put("bandwidth", "android.net.wifi.WifiManager.getConfiguredNetworks");
         ALL_MAPPINGS.put("bandwidth", "android.net.wifi.WifiManager.getDhcpInfo");
         ALL_MAPPINGS.put("test", "java.io.file.getname");
@@ -25,15 +26,17 @@ public class PolicyViolationAppComponent implements ApplicationComponent {
         POLICY_PHRASES = Arrays.asList("another test");
     }
 
-    public List<Api> apis; // all methods from mappings
+    public List<Api> apis; // all methods from models
     public Set<String> phrases;
-    public Set<String> apisInCode; // unique list of api methods that we have mappings for in the code
+    public Set<String> apisInCode; // unique list of api methods that we have models for in the code
+    public List<Specification> specifications; // specifications from spec generator
 
 
     public PolicyViolationAppComponent() {
         apis = new ArrayList<>();
         phrases = new HashSet<>();
         apisInCode = new HashSet<>();
+        specifications = new ArrayList<>();
     }
 
     /**
@@ -105,7 +108,7 @@ public class PolicyViolationAppComponent implements ApplicationComponent {
 
     /**
      * Checks if the api is not allowed based on the privacy policy. If the API
-     * exists in the set of all mappings, but is _not_ represented in the privacy
+     * exists in the set of all models, but is _not_ represented in the privacy
      * policy, this method returns the first phrase associated with that API.
      * @param api API to check for violation
      * @return Phrase associated with violation _or_ empty String if no violation
@@ -137,5 +140,18 @@ public class PolicyViolationAppComponent implements ApplicationComponent {
                 api.allowed = true;
             }
         }
+    }
+
+    /**
+     * Looks for existing specification. This is useful for when the user starts the specification
+     * generator over again and overwrites existing specs.
+     * @param methodName
+     * @return
+     */
+    public Specification findSpec(String methodName){
+        for(Specification spec : specifications)
+            if(methodName.toLowerCase().equals(spec.getMethodName().toLowerCase()))
+                return spec;
+        return null;
     }
 }

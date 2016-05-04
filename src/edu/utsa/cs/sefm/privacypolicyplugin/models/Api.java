@@ -1,4 +1,4 @@
-package edu.utsa.cs.sefm.privacypolicyplugin.mappings;
+package edu.utsa.cs.sefm.privacypolicyplugin.models;
 
 import java.util.ArrayList;
 import java.util.List;
