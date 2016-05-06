@@ -146,14 +146,15 @@ public class Specification {
     }
 
     public String toString() {
-        return phrase + " is " + verb + " with the following specifications:\n" +
-                "# The data used is" + (necessaryFunctionality.toLowerCase().equals("yes") ? " " : " NOT ") + "for the app's basic functionality.\n" +
-                "# The data used is" + (necessaryBusiness.toLowerCase().equals("yes") ? " " : " NOT ") + "for business reasons.\n" +
-                "# The data will be used for: " + how + "\n" +
-                "# It is" + (store.toLowerCase().equals("yes") ? " " : " NOT ") + "necessary to store data off the device on servers.\n" +
-                "# The data will be stored for " + howLong + " on such servers.\n" +
-                "# The data will" + (share.toLowerCase().equals("yes") ? " " : " NOT ") + "be shared with third parties.\n" +
-                "# Such third parties will use the data for: " + shareHow + "\n" +
-                "# The data will be accessed by " + who + " within the organization.";
+        String dataString = (phrase.equals(Specification.NOT_SPECIFIED) ? "" : phrase + " ");
+        return phrase + " is " + verb.toUpperCase() + " with the following specifications:\n" +
+                "# The " + dataString + "data used is" + (necessaryFunctionality.toLowerCase().equals("yes") ? " " : " NOT ") + "for the app's basic functionality.\n" +
+                "# The " + dataString + "data used is" + (necessaryBusiness.toLowerCase().equals("yes") ? " " : " NOT ") + "for business reasons.\n" +
+                "# The " + dataString + "data will be used for: " + how + "\n" +
+                "# The " + dataString + "data will" + (store.toLowerCase().equals("yes") ? " " : " NOT ") + "be stored off the device on servers.\n" +
+                "# The " + dataString + "data will be stored for " + howLong + " on such servers.\n" +
+                "# The " + dataString + "data will" + (share.toLowerCase().equals("yes") ? " " : " NOT ") + "be shared with third parties.\n" +
+                "# Such third parties will use the " + dataString + "data for: " + shareHow + "\n" +
+                "# The " + dataString + "data will be accessed by " + who + " within the organization.";
     }
 }

@@ -12,19 +12,22 @@ import java.io.IOException;
 import java.util.*;
 
 public class ParagraphProcessor {
+    public static final String[] VERBS_PAST = {"accessed", "collected", "obtained", "received", "provided", "gathered",
+            "acquired", "combined", "reviewed", "submitted", "logged", "used", "processed", "utilized", "monitored", "stored",
+            "retained", "maintained", "kept", "recorded", "saved", "shared", "disclosed", "sent", "transferred", "displayed",
+            "psoted", "delivered", "distributed", "notified", "rented"};
+    public static List<String> ontologyPhrasesInPolicy = Collections.synchronizedList(new ArrayList<String>());
+    public static List<String> paragraphs = Collections.synchronizedList(new ArrayList<String>());
+
     private static List<String> nounPhrasesPermutations = Collections.synchronizedList(new ArrayList<String>());
     //private static List<String> collectVerbList = Collections.synchronizedList(Arrays.asList("store", "collect", "receive",
-           // "aggregate", "send", "record", "acquire", "obtain", "use", "transmit", "access", "log", "retain"));
+    // "aggregate", "send", "record", "acquire", "obtain", "use", "transmit", "access", "log", "retain"));
     private static List<String> verbList = Collections.synchronizedList(Arrays.asList("collect", "obtain", "receive", "provide",
             "gather", "access", "acquire", "combine", "review", "submit", "log", "use", "process", "utilize", "monitor",
             "store", "retain", "maintain", "keep", "record", "save", "share", "disclose", "send", "transfer", "display",
             "post", "deliver", "distribute", "notify", "rent"));
-    public static List<String> ontologyPhrasesInPolicy = Collections.synchronizedList(new ArrayList<String>());
-    public static List<String> paragraphs = Collections.synchronizedList(new ArrayList<String>());
-
 
     /**
-     *
      * @param text
      */
     public static void processParagraphs(String text) {
@@ -32,14 +35,14 @@ public class ParagraphProcessor {
         ParagraphParser parser = new ParagraphParser();
         List<String> parsedParagraphs = new ArrayList<>();
         parsedParagraphs = parser.ParagraphParser(text);
-        for(String parseTree : parsedParagraphs){
+        for (String parseTree : parsedParagraphs) {
             System.out.println(parseTree);
         }
-        for(String parseTree : parsedParagraphs){
+        for (String parseTree : parsedParagraphs) {
             if (parseTree.startsWith("(X"))
                 continue;
             PennTreeBankReader treeReader = new PennTreeBankReader(parseTree);
-            try{
+            try {
                 DefaultTreeModel tree = treeReader.ptbTreeBuilder();
                 if (tree == null) {
                     System.out.println("null");
@@ -47,13 +50,13 @@ public class ParagraphProcessor {
                 }
                 DefaultMutableTreeNode rootNode = (DefaultMutableTreeNode) tree.getRoot();
                 getVerbPhrases(rootNode);
-                if(!nounPhrasesPermutations.isEmpty()) {
+                if (!nounPhrasesPermutations.isEmpty()) {
                     System.out.println("Printing the permutation of a noun phrases in the policy:");
                     for (String nounPhrase : nounPhrasesPermutations) {
                         System.out.println(nounPhrase);
                     }
                 }
-            }catch (IOException e) {
+            } catch (IOException e) {
                 e.printStackTrace();
             }
         }
@@ -65,10 +68,10 @@ public class ParagraphProcessor {
     public static void findPhrasesInOntology() {
         System.out.println(" The ontology phrases are :");
         for (String phrase : nounPhrasesPermutations) {
-            if (OntologyOWLAPI.lemmaOntologyPhrases.contains(phrase)){
+            if (OntologyOWLAPI.lemmaOntologyPhrases.contains(phrase)) {
                 int index = OntologyOWLAPI.lemmaOntologyPhrases.indexOf(phrase);
                 String actPhrase = OntologyOWLAPI.ontologyPhrases.get(index);
-                if(!ontologyPhrasesInPolicy.contains(actPhrase) && !phrase.equalsIgnoreCase("information")){
+                if (!ontologyPhrasesInPolicy.contains(actPhrase) && !phrase.equalsIgnoreCase("information")) {
                     ontologyPhrasesInPolicy.add(actPhrase);
                     System.out.print(actPhrase + ", ");
                 }
@@ -79,6 +82,7 @@ public class ParagraphProcessor {
     /**
      * This recursive method, finds all the VPs in a parse tree recursively
      * and if the VP includes collection VBs, the parse tree is kept for NP analysis.
+     *
      * @param rootNode
      */
     private static void getVerbPhrases(DefaultMutableTreeNode rootNode) {
@@ -129,7 +133,7 @@ public class ParagraphProcessor {
                         for (String nounPhrase : nounPhrases) {
                             //refining each noun phrase
                             refinedNouns = nounPhraseRefinement(nounPhrase);
-                            if(refinedNouns.size()<3){
+                            if (refinedNouns.size() < 3) {
                                 temp = nounPhraseProcess(refinedNouns);
                                 for (String tm : temp) {
                                     if (!nounPhrasesPermutations.contains(tm)) {
@@ -167,6 +171,7 @@ public class ParagraphProcessor {
 
     /**
      * This method lemmatize a NP and returns a list of all words starting with "NN" POS tag.
+     *
      * @param nounPhrase
      * @return
      */
@@ -192,6 +197,7 @@ public class ParagraphProcessor {
      * For each element of the power set:
      * IF the element contains only one word then add it to the final list
      * ELSE generate all the permutations of the words in the power set element and add them to the final list
+     *
      * @param nounPhrase
      * @return
      */
@@ -230,6 +236,7 @@ public class ParagraphProcessor {
 
     /**
      * This method generates the power set of a set of nouns
+     *
      * @param originalSet
      * @param <String>
      * @return
@@ -255,6 +262,7 @@ public class ParagraphProcessor {
 
     /**
      * This method swap two strings in a list
+     *
      * @param input
      * @param i
      * @param j
@@ -267,6 +275,7 @@ public class ParagraphProcessor {
 
     /**
      * This method generates the permutation of a set of string
+     *
      * @param ps
      * @param i
      * @param perm
@@ -277,8 +286,8 @@ public class ParagraphProcessor {
             System.out.println("adding the permutation to the final set: ");
             System.out.println(ps);
             StringBuilder st = new StringBuilder();
-            for(int j = 0; j<ps.size(); j++){
-                if(j == ps.size()- 1){
+            for (int j = 0; j < ps.size(); j++) {
+                if (j == ps.size() - 1) {
                     st.append(ps.get(j));
                     break;
                 }
@@ -323,6 +332,7 @@ public class ParagraphProcessor {
 
     /**
      * This method checks if the verb is a collection verb
+     *
      * @param phrase
      * @return
      */

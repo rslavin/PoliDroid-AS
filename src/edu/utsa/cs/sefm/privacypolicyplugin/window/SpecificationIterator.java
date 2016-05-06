@@ -4,6 +4,7 @@ import com.intellij.openapi.application.ApplicationManager;
 import edu.utsa.cs.sefm.privacypolicyplugin.PolicyViolationAppComponent;
 import edu.utsa.cs.sefm.privacypolicyplugin.models.Api;
 import edu.utsa.cs.sefm.privacypolicyplugin.models.Specification;
+import edu.utsa.cs.sefm.privacypolicyplugin.preprocess.ParagraphProcessor;
 
 import javax.swing.*;
 import java.awt.*;
@@ -118,7 +119,7 @@ public class SpecificationIterator extends JFrame {
 
             // verbs
             verbSelect.removeAllItems();
-            for (String verb : SpecificationIterator.VERBS)
+            for (String verb : ParagraphProcessor.VERBS_PAST)
                 verbSelect.addItem(verb);
 
             // booleans
