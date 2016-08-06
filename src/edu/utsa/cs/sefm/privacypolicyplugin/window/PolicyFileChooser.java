@@ -29,7 +29,8 @@ public class PolicyFileChooser extends AnAction {
         final String documentPlaintext = HTMLUtils.getText(file);
         ParagraphProcessor paragraphProc = new ParagraphProcessor();
         paragraphProc.processParagraphs(documentPlaintext);
-        paragraphProc.findPhrasesInOntology();
+        paragraphProc.findNounsInOntology();
+        paragraphProc.findConstituentsInOntology();
         System.out.println("\nPhrases in the ontology and privacy policy are:");
         for (String phraseInPolicy : ParagraphProcessor.ontologyPhrasesInPolicy) {
             System.out.println(phraseInPolicy);

@@ -20,6 +20,7 @@ public class ParagraphProcessor {
     public static List<String> paragraphs = Collections.synchronizedList(new ArrayList<String>());
 
     private static List<String> nounPhrasesPermutations = Collections.synchronizedList(new ArrayList<String>());
+    private static HashMap<String, String> constituentsMap = new HashMap<>();
     //private static List<String> collectVerbList = Collections.synchronizedList(Arrays.asList("store", "collect", "receive",
     // "aggregate", "send", "record", "acquire", "obtain", "use", "transmit", "access", "log", "retain"));
     private static List<String> verbList = Collections.synchronizedList(Arrays.asList("collect", "obtain", "receive", "provide",
@@ -63,15 +64,30 @@ public class ParagraphProcessor {
     }
 
     /**
-     * This method find the ontology phrases that are used in the privacy policy.
+     * This method find the ontology phrases that are used in the privacy policy as nouns and combinations of nouns.
      */
-    public static void findPhrasesInOntology() {
+    public static void findNounsInOntology() {
         System.out.println(" The ontology phrases are :");
         for (String phrase : nounPhrasesPermutations) {
             if (OntologyOWLAPI.lemmaOntologyPhrases.contains(phrase)) {
                 int index = OntologyOWLAPI.lemmaOntologyPhrases.indexOf(phrase);
                 String actPhrase = OntologyOWLAPI.ontologyPhrases.get(index);
                 if (!ontologyPhrasesInPolicy.contains(actPhrase) && !phrase.equalsIgnoreCase("information")) {
+                    ontologyPhrasesInPolicy.add(actPhrase);
+                    System.out.print(actPhrase + ", ");
+                }
+            }
+        }
+    }
+
+    public static void findConstituentsInOntology(){
+        System.out.println("The constituents in the otnology are:");
+        for (Map.Entry<String, String> entry: constituentsMap.entrySet()) {
+            if (OntologyOWLAPI.lemmaOntologyPhrases.contains(entry.getValue())) {
+                System.out.println(entry.getValue() + " found in the ontology as a constituent");
+                int index = OntologyOWLAPI.lemmaOntologyPhrases.indexOf(entry.getValue());
+                String actPhrase = OntologyOWLAPI.ontologyPhrases.get(index);
+                if (!ontologyPhrasesInPolicy.contains(actPhrase) && !entry.getValue().equalsIgnoreCase("information")) {
                     ontologyPhrasesInPolicy.add(actPhrase);
                     System.out.print(actPhrase + ", ");
                 }
@@ -118,46 +134,10 @@ public class ParagraphProcessor {
                     }
                 }
                 if (!lemmaCollectionVerb.isEmpty()) {
-                    List<String> nounPhrases = new ArrayList<>();
-                    getNounPhrases(nounPhrases, rootNode);
-                    System.out.println("\nThe noun phrases for the VP are: ");
-                    for (String nounPhrase : nounPhrases) {
-                        System.out.print(nounPhrase + ", ");
-                    }
-                    if (!nounPhrases.isEmpty()) {
-                        //Refine the noun phrases
-                        //List<String> of a noun phrase permutations
-                        List<String> refinedNounPhrases = new ArrayList<String>();
-                        List<String> refinedNouns = new ArrayList<>();
-                        List<String> temp = new ArrayList<>();
-                        for (String nounPhrase : nounPhrases) {
-                            //refining each noun phrase
-                            refinedNouns = nounPhraseRefinement(nounPhrase);
-                            if (refinedNouns.size() < 3) {
-                                temp = nounPhraseProcess(refinedNouns);
-                                for (String tm : temp) {
-                                    if (!nounPhrasesPermutations.contains(tm)) {
-                                        nounPhrasesPermutations.add(tm);
-                                    }
-                                }
-                                temp.clear();
-                            }
-                            refinedNounPhrases.addAll(refinedNouns);
-                            refinedNouns.clear();
-                        }
 
-                        System.out.println("refined Noun Phrase:" + refinedNounPhrases);
-                        //The powerSet generates 2^n sets. If the input set is more than a limited number the program cannot handle generating powerSet
-                        if (refinedNounPhrases.size() < 8) {
-                            temp = nounPhraseProcess(refinedNounPhrases);
-                            for (String tm : temp) {
-                                if (!nounPhrasesPermutations.contains(tm)) {
-                                    nounPhrasesPermutations.add(tm);
-                                }
-                            }
-                            temp.clear();
-                        }
-                    }
+                    analyzeNounPhrases(rootNode);
+                    analyzeConstituents(rootNode);
+
                 }
 
             }
@@ -169,6 +149,70 @@ public class ParagraphProcessor {
         }
     }
 
+    private static void analyzeConstituents(DefaultMutableTreeNode rootNode){
+        List<String> constituents = new ArrayList<>();
+
+        getConstituents(constituents, rootNode);
+        System.out.println("The constituents for the VP are: ");
+        for (String constituent : constituents) {
+            System.out.println(constituent);
+            Map<String, String> lemmas = Lemmatizer.lemmatizeRMap(constituent);
+            String constituentLemma = "";
+            for(Map.Entry<String, String> entry: lemmas.entrySet()){
+                constituentLemma += entry.getKey() + " ";
+            }
+            constituentLemma = constituentLemma.trim();
+            System.out.println("Constituent: " + constituent + " Lemma: "+ constituentLemma);
+            constituentsMap.put(constituent,constituentLemma);
+        }
+    }
+
+    /**
+     * This method finds all the permutations of nouns in the noun phrases of a sentence
+     * @param rootNode
+     */
+    private static void analyzeNounPhrases(DefaultMutableTreeNode rootNode){
+        List<String> nounPhrases = new ArrayList<>();
+        getNounPhrases(nounPhrases, rootNode);
+        System.out.println("\nThe noun phrases for the VP are: ");
+        for (String nounPhrase : nounPhrases) {
+            System.out.print(nounPhrase + ", ");
+        }
+        if (!nounPhrases.isEmpty()) {
+            //Refine the noun phrases
+            //List<String> of a noun phrase permutations
+            List<String> refinedNounPhrases = new ArrayList<String>();
+            List<String> refinedNouns = new ArrayList<>();
+            List<String> temp = new ArrayList<>();
+            for (String nounPhrase : nounPhrases) {
+                //refining each noun phrase
+                refinedNouns = nounPhraseRefinement(nounPhrase);
+                if (refinedNouns.size() < 3) {
+                    temp = nounPhraseProcess(refinedNouns);
+                    for (String tm : temp) {
+                        if (!nounPhrasesPermutations.contains(tm)) {
+                            nounPhrasesPermutations.add(tm);
+                        }
+                    }
+                    temp.clear();
+                }
+                refinedNounPhrases.addAll(refinedNouns);
+                refinedNouns.clear();
+            }
+
+            System.out.println("refined Noun Phrase:" + refinedNounPhrases);
+            //The powerSet generates 2^n sets. If the input set is more than a limited number the program cannot handle generating powerSet
+            if (refinedNounPhrases.size() < 8) {
+                temp = nounPhraseProcess(refinedNounPhrases);
+                for (String tm : temp) {
+                    if (!nounPhrasesPermutations.contains(tm)) {
+                        nounPhrasesPermutations.add(tm);
+                    }
+                }
+                temp.clear();
+            }
+        }
+    }
     /**
      * This method lemmatize a NP and returns a list of all words starting with "NN" POS tag.
      *
@@ -189,6 +233,9 @@ public class ParagraphProcessor {
         }
         return lemmaNounPhrase;
     }
+
+
+
 
     /**
      * This method gets a noun phrase as the input argument.
@@ -293,7 +340,7 @@ public class ParagraphProcessor {
                 }
                 st.append(ps.get(j) + " ");
             }
-            System.out.println(st.toString());
+            System.out.println(st.toString().trim());
             perm.add(st.toString());
             return;
         }
@@ -321,12 +368,29 @@ public class ParagraphProcessor {
                     np.append(node.getUserObject().toString() + " ");
                 }
             }
-            nounPhrases.add(np.toString());
+            nounPhrases.add(np.toString().trim());
         }
         Enumeration<DefaultMutableTreeNode> children = currentNode.children();
         while (children.hasMoreElements()) {
             DefaultMutableTreeNode child = children.nextElement();
             getNounPhrases(nounPhrases, child);
+        }
+    }
+
+    private static void getConstituents(List<String> constituents, DefaultMutableTreeNode currentNode){
+        StringBuilder cs = new StringBuilder();
+        Enumeration<DefaultMutableTreeNode> postOrder = currentNode.postorderEnumeration();
+        while (postOrder.hasMoreElements()) {
+            DefaultMutableTreeNode node = postOrder.nextElement();
+            if (node.isLeaf()) {
+                cs.append(node.getUserObject().toString() + " ");
+            }
+        }
+        constituents.add(cs.toString().trim());
+        Enumeration<DefaultMutableTreeNode> children = currentNode.children();
+        while (children.hasMoreElements()) {
+            DefaultMutableTreeNode child = children.nextElement();
+            getConstituents(constituents, child);
         }
     }
 
