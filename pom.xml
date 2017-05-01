@@ -28,6 +28,32 @@
             <groupId>net.sourceforge.owlapi</groupId>
             <artifactId>owlapi-distribution</artifactId>
             <version>3.5.6</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>xml-apis</groupId>
+                    <artifactId>xml-apis</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>net.sourceforge.owlap</groupId>
+                    <artifactId>owlapi-impl</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>net.sourceforge.owlap</groupId>
+                    <artifactId>owlapi-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>net.sourceforge.owlap</groupId>
+                    <artifactId>owlapi-apibinding</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>net.sourceforge.owlap</groupId>
+                    <artifactId>owlapi-parsers</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>net.sourceforge.owlap</groupId>
+                    <artifactId>owlapi-tools</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
     </dependencies>
