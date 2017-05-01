@@ -1,6 +1,7 @@
 package edu.utsa.cs.sefm.privacypolicyplugin;
 
 import com.intellij.openapi.components.ApplicationComponent;
+import com.intellij.openapi.diagnostic.Logger;
 import edu.utsa.cs.sefm.privacypolicyplugin.models.Api;
 import edu.utsa.cs.sefm.privacypolicyplugin.models.Specification;
 import org.jetbrains.annotations.NotNull;
@@ -14,6 +15,7 @@ public class PolicyViolationAppComponent implements ApplicationComponent {
     // test data
     private static final Map<String, String> ALL_MAPPINGS;
     private static final List<String> POLICY_PHRASES;
+    private static final boolean DEBUG = true;
 
     static {
         ALL_MAPPINGS = new HashMap<>();
@@ -30,6 +32,7 @@ public class PolicyViolationAppComponent implements ApplicationComponent {
     public Set<String> phrases;
     public Set<String> apisInCode; // unique list of api methods that we have models for in the code
     public List<Specification> specifications; // specifications from spec generator
+    public Logger logger;
 
 
     public PolicyViolationAppComponent() {
@@ -37,6 +40,7 @@ public class PolicyViolationAppComponent implements ApplicationComponent {
         phrases = new HashSet<>();
         apisInCode = new HashSet<>();
         specifications = new ArrayList<>();
+        logger = Logger.getInstance(this.getClass());
     }
 
     /**

@@ -3,39 +3,26 @@ package edu.utsa.cs.sefm.privacypolicyplugin.preprocess;
 /**
  * Created by Mitra on 3/21/2016.
  */
+import edu.stanford.nlp.ling.CoreAnnotations.SentencesAnnotation;
+import edu.stanford.nlp.pipeline.Annotation;
 import edu.stanford.nlp.pipeline.StanfordCoreNLP;
+import edu.stanford.nlp.trees.Tree;
+import edu.stanford.nlp.trees.TreeCoreAnnotations;
+import edu.stanford.nlp.util.CoreMap;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
-import edu.stanford.nlp.ling.CoreAnnotations.SentencesAnnotation;
-import edu.stanford.nlp.pipeline.Annotation;
-import edu.stanford.nlp.trees.Tree;
-import edu.stanford.nlp.trees.TreeCoreAnnotations;
-import edu.stanford.nlp.util.CoreMap;
 
-public class ParagraphParser {
+class ParagraphParser {
 
-    public static List<String> ParagraphParser(String text) {
-        StanfordParser spar = new StanfordParser();
-        List<String> parseTrees;
-        parseTrees = spar.parse(text);
-        return parseTrees;
-    }
-}
+    private StanfordCoreNLP pipeline;
 
-
-
-class StanfordParser {
-
-    protected StanfordCoreNLP pipeline;
-
-    public StanfordParser() {
+    ParagraphParser() {
         // Create StanfordCoreNLP object properties, with POS tagging
         // (required for lemmatization), and lemmatization
-        Properties props;
-        props = new Properties();
+        Properties props = new Properties();
         props.put("annotators", "tokenize, ssplit, parse ");
 
             /*
@@ -56,10 +43,9 @@ class StanfordParser {
         this.pipeline = new StanfordCoreNLP(props);
     }
 
-    public List<String> parse(String documentText)
+    List<String> parse(String documentText)
     {
         List<String> sentenceTreeList = Collections.synchronizedList(new ArrayList<String>());
-        // Create an empty Annotation just with the given text
         Annotation document = new Annotation(documentText);
         // run all Annotators on this text
         this.pipeline.annotate(document);
@@ -72,7 +58,4 @@ class StanfordParser {
 
         return sentenceTreeList;
     }
-
 }
-
-

@@ -1,7 +1,7 @@
 <idea-plugin>
     <id>edu.utsa.cs.sefm.privacypolicyplugin</id>
-    <name>PoliDroid - Privacy Policy Verification</name>
-    <version>1.0</version>
+    <name>PoliDroid-AS - Privacy Policy Verification</name>
+    <version>0.1-alpha</version>
     <vendor email="rocky.slavin@gmail.com" url="http://sefm.cs.utsa.edu">UTSA SEFM Research Group</vendor>
 
     <description>Detects potential Android privacy policy violations.</description>
@@ -43,7 +43,7 @@
         <!--text="MapFileChooser" description="Choose a models file.">-->
         <!--<add-to-group group-id="MainMenu" anchor="last"/>-->
         <!--</action>-->
-        <group id="PrivacyPolicy.menu" text="_PoliDroid" description="Privacy Policy Menu">
+        <group id="PrivacyPolicy.menu" text="_PoliDroid-AS" description="Privacy Policy Menu">
             <add-to-group group-id="MainMenu" anchor="last"  />
             <action id="MapFileChooser" class="edu.utsa.cs.sefm.privacypolicyplugin.window.MapFileChooser"
                     text="Select _Mappings File" description="Choose a mappings file." />

@@ -4,6 +4,8 @@ package edu.utsa.cs.sefm.privacypolicyplugin.preprocess;
  * Created by Mitra on 11/14/2015.
  */
 
+import com.intellij.openapi.application.ApplicationManager;
+import edu.utsa.cs.sefm.privacypolicyplugin.PolicyViolationAppComponent;
 import edu.utsa.cs.sefm.privacypolicyplugin.ontology.OntologyOWLAPI;
 
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -32,76 +34,91 @@ public class ParagraphProcessor {
      * @param text
      */
     public static void processParagraphs(String text) {
+        PolicyViolationAppComponent comp = (PolicyViolationAppComponent) ApplicationManager.getApplication().getComponent("PolicyViolationAppComponent");
+        comp.logger.info("### Processing paragraphs ###");
 
+        // annotate paragraphs
         ParagraphParser parser = new ParagraphParser();
-        List<String> parsedParagraphs = new ArrayList<>();
-        parsedParagraphs = parser.ParagraphParser(text);
+        List<String> parsedParagraphs = parser.parse(text);
+
         for (String parseTree : parsedParagraphs) {
-            System.out.println(parseTree);
-        }
-        for (String parseTree : parsedParagraphs) {
-            if (parseTree.startsWith("(X"))
+            if (parseTree.startsWith("(X")) {
+                comp.logger.info("Skipping parse tree: " + parseTree);
                 continue;
+            }
             PennTreeBankReader treeReader = new PennTreeBankReader(parseTree);
             try {
+                comp.logger.info("Processing: " + parseTree);
                 DefaultTreeModel tree = treeReader.ptbTreeBuilder();
                 if (tree == null) {
-                    System.out.println("null");
+                    comp.logger.warn("Null tree reader (skipping)");
                     continue;
                 }
-                DefaultMutableTreeNode rootNode = (DefaultMutableTreeNode) tree.getRoot();
-                getVerbPhrases(rootNode);
+
+                getVerbPhrases((DefaultMutableTreeNode) tree.getRoot());
                 if (!nounPhrasesPermutations.isEmpty()) {
-                    System.out.println("Printing the permutation of a noun phrases in the policy:");
+                    comp.logger.info("Printing permutation of noun phrases in the policy:");
                     for (String nounPhrase : nounPhrasesPermutations) {
-                        System.out.println(nounPhrase);
+                        comp.logger.info("\t" +nounPhrase);
                     }
                 }
             } catch (IOException e) {
+                comp.logger.error("Error processing paragraphs");
                 e.printStackTrace();
             }
         }
+
+        comp.logger.info("### END Processing paragraphs ###");
     }
 
     /**
-     * This method find the ontology phrases that are used in the privacy policy as nouns and combinations of nouns.
+     * Finds phrases that also exist in the ontology
      */
     public static void findNounsInOntology() {
-        System.out.println(" The ontology phrases are :");
+        PolicyViolationAppComponent comp = (PolicyViolationAppComponent) ApplicationManager.getApplication().getComponent("PolicyViolationAppComponent");
+        comp.logger.info("### Finding noun matches in ontology ###");
         for (String phrase : nounPhrasesPermutations) {
+            // if the noun phrase exists in the ontology
             if (OntologyOWLAPI.lemmaOntologyPhrases.contains(phrase)) {
-                int index = OntologyOWLAPI.lemmaOntologyPhrases.indexOf(phrase);
-                String actPhrase = OntologyOWLAPI.ontologyPhrases.get(index);
-                if (!ontologyPhrasesInPolicy.contains(actPhrase) && !phrase.equalsIgnoreCase("information")) {
-                    ontologyPhrasesInPolicy.add(actPhrase);
-                    System.out.print(actPhrase + ", ");
+                String match = OntologyOWLAPI.ontologyPhrases.get(OntologyOWLAPI.lemmaOntologyPhrases.indexOf(phrase));
+                // add the phrase if it doesn't exist
+                if (!ontologyPhrasesInPolicy.contains(match) && !phrase.equalsIgnoreCase("information")) {
+                    ontologyPhrasesInPolicy.add(match);
+                    comp.logger.info("\tFound match: " + match);
                 }
             }
         }
-    }
-
-    public static void findConstituentsInOntology(){
-        System.out.println("The constituents in the otnology are:");
-        for (Map.Entry<String, String> entry: constituentsMap.entrySet()) {
-            if (OntologyOWLAPI.lemmaOntologyPhrases.contains(entry.getValue())) {
-                System.out.println(entry.getValue() + " found in the ontology as a constituent");
-                int index = OntologyOWLAPI.lemmaOntologyPhrases.indexOf(entry.getValue());
-                String actPhrase = OntologyOWLAPI.ontologyPhrases.get(index);
-                if (!ontologyPhrasesInPolicy.contains(actPhrase) && !entry.getValue().equalsIgnoreCase("information")) {
-                    ontologyPhrasesInPolicy.add(actPhrase);
-                    System.out.print(actPhrase + ", ");
-                }
-            }
-        }
+        comp.logger.info("### END Finding noun matches in ontology ###");
     }
 
     /**
-     * This recursive method, finds all the VPs in a parse tree recursively
-     * and if the VP includes collection VBs, the parse tree is kept for NP analysis.
+     * Finds constituent phrases in ontology
+     */
+    public static void findConstituentsInOntology(){
+        PolicyViolationAppComponent comp = (PolicyViolationAppComponent) ApplicationManager.getApplication().getComponent("PolicyViolationAppComponent");
+        comp.logger.info("### Finding constituents in ontology ###");
+        for (Map.Entry<String, String> entry: constituentsMap.entrySet()) {
+            if (OntologyOWLAPI.lemmaOntologyPhrases.contains(entry.getValue())) {
+                int index = OntologyOWLAPI.lemmaOntologyPhrases.indexOf(entry.getValue());
+                String match = OntologyOWLAPI.ontologyPhrases.get(index);
+                if (!ontologyPhrasesInPolicy.contains(match) && !entry.getValue().equalsIgnoreCase("information")) {
+                    ontologyPhrasesInPolicy.add(match);
+                    comp.logger.info("\tFound match: " + match);
+                }
+            }
+        }
+        comp.logger.info("### END Finding constituents in ontology ###");
+    }
+
+    /**
+     * Recursively finds verb phrases in a parse tree. If a verb phrase includes a collection
+     * of VBs it is kept for NP analysis
      *
      * @param rootNode
      */
     private static void getVerbPhrases(DefaultMutableTreeNode rootNode) {
+        PolicyViolationAppComponent comp = (PolicyViolationAppComponent) ApplicationManager.getApplication().getComponent("PolicyViolationAppComponent");
+        comp.logger.info("### Finding verb phrases for root node \"" + rootNode +"\" ###");
         if (rootNode.getUserObject().equals("VP")) {
             List<String> verbs = new ArrayList<>();
             Enumeration<DefaultMutableTreeNode> children = rootNode.breadthFirstEnumeration();
@@ -115,14 +132,14 @@ public class ParagraphProcessor {
                 }
             }
             if (!verbs.isEmpty()) {
-                System.out.println("\nThe verbs in the current VP are: ");
+                comp.logger.info("\tThe verbs in the current VP are: ");
                 for (String verb : verbs) {
-                    System.out.print(verb + ", ");
+                    comp.logger.info("\t " + verb);
                 }
                 List<String> lemmaVerbs = new ArrayList<>();
                 List<String> lemmaCollectionVerb = new ArrayList<>();
                 for (String verb : verbs) {
-                    Map<String, String> lemmaVerbsMap = new HashMap<>();
+                    Map<String, String> lemmaVerbsMap;
                     lemmaVerbsMap = Lemmatizer.lemmatizeRMap(verb);
                     for (Map.Entry<String, String> entry : lemmaVerbsMap.entrySet()) {
                         lemmaVerbs.add(entry.getKey());
@@ -134,7 +151,6 @@ public class ParagraphProcessor {
                     }
                 }
                 if (!lemmaCollectionVerb.isEmpty()) {
-
                     analyzeNounPhrases(rootNode);
                     analyzeConstituents(rootNode);
 
@@ -147,24 +163,27 @@ public class ParagraphProcessor {
             DefaultMutableTreeNode child = children.nextElement();
             getVerbPhrases(child);
         }
+        comp.logger.info("### END Finding verb phrases for root node \"" + rootNode +"\" ###");
     }
 
     private static void analyzeConstituents(DefaultMutableTreeNode rootNode){
+        PolicyViolationAppComponent comp = (PolicyViolationAppComponent) ApplicationManager.getApplication().getComponent("PolicyViolationAppComponent");
+        comp.logger.info("### Finding constituents for root node \"" + rootNode +"\" ###");
         List<String> constituents = new ArrayList<>();
 
         getConstituents(constituents, rootNode);
-        System.out.println("The constituents for the VP are: ");
+        comp.logger.info("\tThe constituents for the VP are: ");
         for (String constituent : constituents) {
-            System.out.println(constituent);
             Map<String, String> lemmas = Lemmatizer.lemmatizeRMap(constituent);
             String constituentLemma = "";
             for(Map.Entry<String, String> entry: lemmas.entrySet()){
                 constituentLemma += entry.getKey() + " ";
             }
             constituentLemma = constituentLemma.trim();
-            System.out.println("Constituent: " + constituent + " Lemma: "+ constituentLemma);
+            comp.logger.info("\t constituent: " + constituent + " | lemma: "+ constituentLemma);
             constituentsMap.put(constituent,constituentLemma);
         }
+        comp.logger.info("### END Finding constituents for root node \"" + rootNode +"\" ###");
     }
 
     /**

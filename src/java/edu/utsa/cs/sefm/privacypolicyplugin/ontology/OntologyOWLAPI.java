@@ -3,19 +3,12 @@ package edu.utsa.cs.sefm.privacypolicyplugin.ontology;
 /**
  * Created by Mitra on 11/15/2015.
  */
-import java.io.IOException;
-import java.util.*;
-
 import com.intellij.openapi.vfs.VirtualFile;
 import org.semanticweb.owlapi.apibinding.OWLManager;
-import org.semanticweb.owlapi.model.AddAxiom;
-import org.semanticweb.owlapi.model.IRI;
-import org.semanticweb.owlapi.model.OWLClass;
-import org.semanticweb.owlapi.model.OWLClassExpression;
-import org.semanticweb.owlapi.model.OWLDataFactory;
-import org.semanticweb.owlapi.model.OWLException;
-import org.semanticweb.owlapi.model.OWLOntology;
-import org.semanticweb.owlapi.model.OWLOntologyManager;
+import org.semanticweb.owlapi.model.*;
+
+import java.io.IOException;
+import java.util.*;
 
 public class OntologyOWLAPI {
     static OWLOntologyManager man;

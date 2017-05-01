@@ -11,7 +11,6 @@ import com.intellij.openapi.vfs.VirtualFile;
 import edu.utsa.cs.sefm.privacypolicyplugin.PolicyViolationAppComponent;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 
@@ -20,25 +19,32 @@ import java.util.ArrayList;
  */
 public class MapFileChooser extends AnAction {
     public void actionPerformed(AnActionEvent e) {
+        int i = 0;
         Project project = e.getData(DataKeys.PROJECT);
         VirtualFile file = FileChooser.chooseFile(FileChooserDescriptorFactory.createSingleFileNoJarsDescriptor(), project, null);
         PolicyViolationAppComponent comp = (PolicyViolationAppComponent) ApplicationManager.getApplication().getComponent("PolicyViolationAppComponent");
 
-        try {
-            BufferedReader br = new BufferedReader(new InputStreamReader(file.getInputStream()));
-            String line;
+        if(file != null) {
+            try {
+                BufferedReader br = new BufferedReader(new InputStreamReader(file.getInputStream()));
+                String line;
 
-            // clear existing models
-            comp.apis = new ArrayList<>();
+                // clear existing models
+                comp.apis = new ArrayList<>();
 
-            // read in new models
-            while ((line = br.readLine()) != null) {
-                parseLine(comp, line);
+                // read in new models
+                while ((line = br.readLine()) != null) {
+                    parseLine(comp, line);
+                    i++;
+                }
+                comp.logger.info(i + " mappings parsed");
+                br.close();
+            } catch (Exception e1) {
+                comp.logger.error("Error parsing models");
+                e1.printStackTrace();
             }
-            br.close();
-        } catch (IOException e1) {
-            System.err.println("Error parsing models");
-            e1.printStackTrace();
+        }else{
+            comp.logger.error("Invalid file pointer");
         }
     }
 
