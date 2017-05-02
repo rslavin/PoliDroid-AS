@@ -19,7 +19,7 @@
                 </exclusion>
                 <exclusion>
                     <groupId>org.slf4j</groupId>
-                    <artifactId>slf4j-api</artifactId>
+                    <artifactId>slf4j-apiMethod</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
@@ -45,7 +45,7 @@
                 </exclusion>
                 <exclusion>
                     <groupId>net.sourceforge.owlap</groupId>
-                    <artifactId>owlapi-api</artifactId>
+                    <artifactId>owlapi-apiMethod</artifactId>
                 </exclusion>
                 <exclusion>
                     <groupId>net.sourceforge.owlap</groupId>

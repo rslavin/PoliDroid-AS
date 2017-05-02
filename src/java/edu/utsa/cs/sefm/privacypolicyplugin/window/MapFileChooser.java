@@ -14,9 +14,6 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 
-/**
- * Created by Rocky on 10/18/2015.
- */
 public class MapFileChooser extends AnAction {
     public void actionPerformed(AnActionEvent e) {
         int i = 0;
@@ -30,7 +27,7 @@ public class MapFileChooser extends AnAction {
                 String line;
 
                 // clear existing models
-                comp.apis = new ArrayList<>();
+                comp.apiMethods = new ArrayList<>();
 
                 // read in new models
                 while ((line = br.readLine()) != null) {
@@ -43,8 +40,6 @@ public class MapFileChooser extends AnAction {
                 PolicyViolationAppComponent.logger.error("Error parsing models");
                 e1.printStackTrace();
             }
-        }else{
-            PolicyViolationAppComponent.logger.error("Invalid file pointer");
         }
     }
 

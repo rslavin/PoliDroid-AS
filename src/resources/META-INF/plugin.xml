@@ -4,7 +4,7 @@
     <version>0.1-alpha</version>
     <vendor email="rocky.slavin@gmail.com" url="http://sefm.cs.utsa.edu">UTSA SEFM Research Group</vendor>
 
-    <description>Detects potential Android privacy policy violations.</description>
+    <description>Detects potential Android privacy policy misalignments.</description>
 
     <change-notes><![CDATA[
         First version. Detects potential privacy policy violations based on simple mappings and policy file.

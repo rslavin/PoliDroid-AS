@@ -1,8 +1,4 @@
-package edu.utsa.cs.sefm.privacypolicyplugin.preprocess;
-
-/**
- * Created by Mitra on 3/21/2016.
- */
+package edu.utsa.cs.sefm.privacypolicyplugin.nlp.ontology.preprocess;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
@@ -11,12 +7,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class PennTreeBankReader {
+class PennTreeBankReader {
     String pennTreeString = null;
     private int i = 0;
     private int n;
 
-    public PennTreeBankReader(String pennTreeString) {
+    PennTreeBankReader(String pennTreeString) {
         this.pennTreeString = pennTreeString;
         n = pennTreeString.length();
     }
@@ -56,7 +52,7 @@ public class PennTreeBankReader {
         }
         return tokens;
     }
-    public DefaultTreeModel ptbTreeBuilder() throws IOException {
+    DefaultTreeModel ptbTreeBuilder() throws IOException {
         DefaultMutableTreeNode root = new DefaultMutableTreeNode("ROOT");
         DefaultMutableTreeNode current = root;
         int state = 0;
@@ -65,12 +61,10 @@ public class PennTreeBankReader {
             //throw new IllegalArgumentException("the ptb should start with root as the first tag");
              return new DefaultTreeModel(null);
         }
-        //tokenList.remove(0);
-        //tokenList.remove(1);
-        //tokenList.remove(tokenList.size() - 1);
-        for (String token : tokenList){
-            System.out.println(token);
-        }
+
+//        for (String token : tokenList){
+//            System.out.println(token);
+//        }
         for (String token : tokenList){
             switch(state){
                 case 0:
@@ -92,27 +86,31 @@ public class PennTreeBankReader {
                     }
                     break;
                 case 2:
-                    if (token.equals(")")) {
-                        throw new IllegalArgumentException("expecting [(] or [word]");
-                    } else if (token.equals("(")) {
-                        DefaultMutableTreeNode child = new DefaultMutableTreeNode();
-                        current.add(child);
-                        current = child;
-                        state = 1;
-                    } else {
-                        DefaultMutableTreeNode child = new DefaultMutableTreeNode(token);
-                        current.add(child);
-                        state = 3;
+                    switch (token) {
+                        case ")":
+                            throw new IllegalArgumentException("expecting [(] or [word]");
+                        case "(": {
+                            DefaultMutableTreeNode child = new DefaultMutableTreeNode();
+                            current.add(child);
+                            current = child;
+                            state = 1;
+                            break;
+                        }
+                        default: {
+                            DefaultMutableTreeNode child = new DefaultMutableTreeNode(token);
+                            current.add(child);
+                            state = 3;
+                            break;
+                        }
                     }
                     break;
                 case 3:
                     if (token.equals(")")) {
-                        if (current == null) {
+                        if (current == null) { // TODO: Mitra, this is always false. What was the intention?
                             throw new IllegalArgumentException("too much [)]");
                         }
                         current = (DefaultMutableTreeNode) current.getParent();
                         if (current.getParent() == null) {
-                            //return new DefaultTreeModel(root);
                             break;
                         }
                     } else if (token.equals("(")) {
@@ -124,7 +122,6 @@ public class PennTreeBankReader {
                     break;
             }
         }
-
         return new DefaultTreeModel(root);
     }
 }

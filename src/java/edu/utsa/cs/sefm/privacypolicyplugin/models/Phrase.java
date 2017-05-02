@@ -3,9 +3,6 @@ package edu.utsa.cs.sefm.privacypolicyplugin.models;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by Rocky on 10/18/2015.
- */
 public class Phrase {
     public List<String> apis;
     public String phrase;

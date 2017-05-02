@@ -7,8 +7,8 @@ import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.psi.JavaElementVisitor;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.PsiMethodCallExpression;
-import edu.utsa.cs.sefm.privacypolicyplugin.ontology.OntologyOWLAPI;
-import edu.utsa.cs.sefm.privacypolicyplugin.preprocess.ParagraphProcessor;
+import edu.utsa.cs.sefm.privacypolicyplugin.nlp.ontology.OntologyOWLAPI;
+import edu.utsa.cs.sefm.privacypolicyplugin.nlp.ontology.preprocess.ParagraphProcessor;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 
@@ -23,13 +23,13 @@ public class PolicyViolationInspection extends LocalInspectionTool{
     @NotNull
     @Override
     public String getDisplayName() {
-        return "PoliDroid";
+        return "PoliDroid-AS";
     }
 
     @NotNull
     @Override
     public String getShortName() {
-        return "PoliDroid";
+        return "PoliDroid-AS";
     }
 
     @Nls
@@ -50,7 +50,7 @@ public class PolicyViolationInspection extends LocalInspectionTool{
 
                 String violation = getViolation(expression);
                 if(violation != null) {
-                    System.out.println("violation is: " + violation);
+                    PolicyViolationAppComponent.logger.info("Found misalignment: " + violation);
                     holder.registerProblem(expression, violation);
                 }
             }
@@ -78,16 +78,11 @@ public class PolicyViolationInspection extends LocalInspectionTool{
             String methodName = expression.getMethodExpression().getReferenceName().toString();
             String fullName = className + "." + methodName;
 
-        /*String phrase = isViolation(fullName.toLowerCase());
-        if(phrase.length() > 0) {
-            System.out.println("Possible privacy policy violation. Consider adding the phrase: \"" + phrase + "\" to your policy.");
-            return "Possible privacy policy violation. Consider adding the phrase: \"" + phrase + "\" to your policy.";
-        }
-        return null;
-*/
-            List<String> phrasesOfAPI = isViolation(fullName.toLowerCase());
-            if (!phrasesOfAPI.isEmpty()) {
+            List<String> phrasesOfAPI = isViolation(fullName.toLowerCase()); // this also adds api invocations to comp
+            if (!phrasesOfAPI.isEmpty()) { // if the method has mapped phrases
                 for (String phraseMappedToApi : phrasesOfAPI) {
+                    PolicyViolationAppComponent.logger.info("Phrase of API: " + phraseMappedToApi);
+                    // if the policy/ontology intersection contains the phrase, skip it
                     if (ParagraphProcessor.ontologyPhrasesInPolicy.contains(phraseMappedToApi.replaceAll("_", " "))) {
                         phrasesOfAPI.remove(phraseMappedToApi);
                         continue;
@@ -99,7 +94,8 @@ public class PolicyViolationInspection extends LocalInspectionTool{
                         }
                     }
                 }
-                if (!phrasesOfAPI.isEmpty()) {
+                if (!phrasesOfAPI.isEmpty()) { // if still has matches
+                    // TODO check why the code below doesn't find weak/strong violations anymore
                     List<String> possiblePhrases = new ArrayList<>();
                     for (String phraseMappedtoAPI : phrasesOfAPI) {
                         if (OntologyOWLAPI.classDoesExists(phraseMappedtoAPI.toLowerCase().replaceAll(" ", "_"), OntologyOWLAPI.ontology)) {
@@ -107,22 +103,22 @@ public class PolicyViolationInspection extends LocalInspectionTool{
                                 if (OntologyOWLAPI.isAncestorOf(phraseInPolicy.toLowerCase().replaceAll(" ", "_"), phraseMappedtoAPI.toLowerCase().replaceAll(" ", "_"), OntologyOWLAPI.ontology)) {
                                     if (!possiblePhrases.contains(phraseMappedtoAPI)) {
                                         possiblePhrases.add(phraseMappedtoAPI.replaceAll("_", " "));
-                                        System.out.println("ancestor is :" + phraseInPolicy);
+                                        PolicyViolationAppComponent.logger.info("Ancestor is:" + phraseInPolicy);
                                     }
                                 }
                             }
                         }
                     }
                     if (!possiblePhrases.isEmpty()) {
-                        String phrases = "";
+                        StringBuilder phrases = new StringBuilder();
                         for (String possiblePhrase : possiblePhrases) {
-                            phrases += "\"" + possiblePhrase + "\" ";
+                            phrases.append("\"").append(possiblePhrase).append("\" ");
                         }
                         return ("Possible weak privacy policy violation. Consider adding these phrases: " + phrases + " to your policy.");
                     } else {
-                        String strongPhrases = "";
+                        StringBuilder strongPhrases = new StringBuilder();
                         for (String strongPhrase : phrasesOfAPI) {
-                            strongPhrases += "\"" + strongPhrase + "\" ";
+                            strongPhrases.append("\"").append(strongPhrase).append("\" ");
                         }
                         return ("Possible strong privacy violation. Consider adding these phrases: " + strongPhrases + " to your policy.");
                     }

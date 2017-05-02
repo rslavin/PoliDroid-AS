@@ -8,8 +8,8 @@ import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import edu.utsa.cs.sefm.privacypolicyplugin.PolicyViolationAppComponent;
-import edu.utsa.cs.sefm.privacypolicyplugin.ontology.OntologyOWLAPI;
-import edu.utsa.cs.sefm.privacypolicyplugin.preprocess.Lemmatizer;
+import edu.utsa.cs.sefm.privacypolicyplugin.nlp.ontology.OntologyOWLAPI;
+import edu.utsa.cs.sefm.privacypolicyplugin.nlp.ontology.preprocess.Lemmatizer;
 
 
 /**
@@ -21,20 +21,22 @@ public class OntologyFileChooser extends AnAction {
         Project project = e.getData(DataKeys.PROJECT);
         VirtualFile file = FileChooser.chooseFile(FileChooserDescriptorFactory.createSingleFileNoJarsDescriptor(), project, null);
         StringBuilder sb;
-        try{
-            OntologyOWLAPI.loader(file);
-            OntologyOWLAPI.ontologyPhrases = OntologyOWLAPI.ListOfOntologyPhrases(OntologyOWLAPI.ontology);
-            sb = new StringBuilder();
-            for(int i = 0; i<OntologyOWLAPI.ontologyPhrases.size(); i++){
-                sb.append(OntologyOWLAPI.ontologyPhrases.get(i) + ". ");
+        if(file != null) {
+            try {
+                OntologyOWLAPI.loader(file);
+                OntologyOWLAPI.ontologyPhrases = OntologyOWLAPI.ListOfOntologyPhrases(OntologyOWLAPI.ontology);
+                sb = new StringBuilder();
+                for (int i = 0; i < OntologyOWLAPI.ontologyPhrases.size(); i++) {
+                    sb.append(OntologyOWLAPI.ontologyPhrases.get(i)).append(". ");
+                }
+
+                OntologyOWLAPI.lemmaOntologyPhrases = Lemmatizer.lemmatizeRList(sb.toString());
+                PolicyViolationAppComponent.logger.info(OntologyOWLAPI.lemmaOntologyPhrases.size() + " ontology phrases loaded");
+
+            } catch (Exception exp) {
+                PolicyViolationAppComponent.logger.error("Failed to load ontology file");
+                exp.printStackTrace();
             }
-
-            OntologyOWLAPI.lemmaOntologyPhrases = Lemmatizer.lemmatizeRList(sb.toString());
-            PolicyViolationAppComponent.logger.info(OntologyOWLAPI.lemmaOntologyPhrases.size() + " ontology phrases loaded");
-
-        } catch (Exception exp){
-            System.err.println("Failed to load ontology file");
-            exp.printStackTrace();
         }
     }
 }

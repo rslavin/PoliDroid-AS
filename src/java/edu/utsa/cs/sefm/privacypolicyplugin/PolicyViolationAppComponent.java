@@ -2,7 +2,7 @@ package edu.utsa.cs.sefm.privacypolicyplugin;
 
 import com.intellij.openapi.components.ApplicationComponent;
 import com.intellij.openapi.diagnostic.Logger;
-import edu.utsa.cs.sefm.privacypolicyplugin.models.Api;
+import edu.utsa.cs.sefm.privacypolicyplugin.models.ApiMethod;
 import edu.utsa.cs.sefm.privacypolicyplugin.models.Specification;
 import org.jetbrains.annotations.NotNull;
 
@@ -12,31 +12,15 @@ import java.util.*;
  * Created by Rocky on 10/18/2015.
  */
 public class PolicyViolationAppComponent implements ApplicationComponent {
-    // test data
-    private static final Map<String, String> ALL_MAPPINGS;
-    private static final List<String> POLICY_PHRASES;
-    public static final boolean DEBUG = true;
     public final static Logger logger = Logger.getInstance("PoliDroid-AS");
-
-    static {
-        ALL_MAPPINGS = new HashMap<>();
-        // test models
-        ALL_MAPPINGS.put("bandwidth", "android.net.wifi.WifiManager.getConfiguredNetworks");
-        ALL_MAPPINGS.put("bandwidth", "android.net.wifi.WifiManager.getDhcpInfo");
-        ALL_MAPPINGS.put("test", "java.io.file.getname");
-
-        // test phrases from policy
-        POLICY_PHRASES = Arrays.asList("another test");
-    }
-
-    public List<Api> apis; // all methods from models
+    public List<ApiMethod> apiMethods; // all methods from models
     public Set<String> phrases;
     public Set<String> apisInCode; // unique list of api methods that we have models for in the code
     public List<Specification> specifications; // specifications from spec generator
 
 
     public PolicyViolationAppComponent() {
-        apis = new ArrayList<>();
+        apiMethods = new ArrayList<>();
         phrases = new HashSet<>();
         apisInCode = new HashSet<>();
         specifications = new ArrayList<>();
@@ -60,25 +44,6 @@ public class PolicyViolationAppComponent implements ApplicationComponent {
     }
 
     /**
-     * Initializes set of all APIs.
-     */
-    private void initApis() {
-        for (Map.Entry<String, String> entry : ALL_MAPPINGS.entrySet()) {
-            addApi(entry.getValue(), entry.getKey());
-        }
-    }
-
-    /**
-     * Initializes phrases from the privacy policy. These mark "allowable" APIs.
-     */
-    private void initPolicyPhrases(){
-        for(String policyPhrase : POLICY_PHRASES){
-            addPolicyPhrase(policyPhrase);
-        }
-
-    }
-
-    /**
      * Adds an API-phrase mapping to the plugin's database. Call this from the mapping
      * file reader.
      * @param api
@@ -86,13 +51,13 @@ public class PolicyViolationAppComponent implements ApplicationComponent {
      */
     public void addApi(String api, String phrase) {
         phrases.add(phrase.toLowerCase().trim());
-        for (Api existingApi : apis) {
-            if (existingApi.api.equals(api)) {
-                existingApi.addPhrase(phrase);
+        for (ApiMethod existingApiMethod : apiMethods) {
+            if (existingApiMethod.api.equals(api)) {
+                existingApiMethod.addPhrase(phrase);
                 return;
             }
         }
-        apis.add(new Api(api, phrase));
+        apiMethods.add(new ApiMethod(api, phrase));
     }
 
     /**
@@ -100,10 +65,10 @@ public class PolicyViolationAppComponent implements ApplicationComponent {
      * @param api API to search for.
      * @return First phrase associated with the API.
      */
-    public String hasApi(String api) {
-        for (Api existingApi : apis) {
-            if (existingApi.api.toLowerCase().equals(api.toLowerCase())) {
-                return existingApi.phrases.get(0);
+    String hasApi(String api) {
+        for (ApiMethod existingApiMethod : apiMethods) {
+            if (existingApiMethod.api.toLowerCase().equals(api.toLowerCase())) {
+                return existingApiMethod.phrases.get(0);
             }
         }
         return "";
@@ -113,35 +78,48 @@ public class PolicyViolationAppComponent implements ApplicationComponent {
      * Checks if the api is not allowed based on the privacy policy. If the API
      * exists in the set of all models, but is _not_ represented in the privacy
      * policy, this method returns the first phrase associated with that API.
+     * This method is also responsible for detecting any mapped methods in the code.
      * @param api API to check for violation
      * @return Phrase associated with violation _or_ empty String if no violation
      */
-    public List<String> isViolation(String api){
-        for (Api existingApi : apis) {
-            // add it to list of apis found in the code
-            if(existingApi.api.toLowerCase().equals(api.toLowerCase()))
+    List<String> isViolation(String api){
+        for (ApiMethod existingApiMethod : apiMethods) {
+            // add it to list of apiMethods found in the code
+            if(existingApiMethod.toSimpleString().equals(api.toLowerCase())) {
+                PolicyViolationAppComponent.logger.info("API invocation detected: " + api);
                 apisInCode.add(api);
-
-            // check if it's a violation
-            if (!existingApi.allowed && existingApi.api.toLowerCase().equals(api.toLowerCase())) {
-                return existingApi.phrases;
+                // check if it's a violation
+                if(!existingApiMethod.allowed) {
+                    PolicyViolationAppComponent.logger.info("Violation detected: " + api);
+                    return existingApiMethod.phrases;
+                }
             }
+
         }
-        List<String> emptyList = Collections.emptyList();
-        return emptyList;
+        return Collections.emptyList();
     }
 
     /**
      * Marks a specific phrase as being covered by the privacy policy.
      * Marks APIs as allowed if they are associated with the phrase.
+     * This detection is based on the mappings file and is used for detecting
+     * valid API invocations.
      * @param phrase
      */
     public void addPolicyPhrase(String phrase){
-        for(Api api : apis){
-            if(api.phrases.contains(phrase.toLowerCase().trim())) {
-                System.err.println("added " + phrase);
-                api.allowed = true;
+        boolean found = false;
+        // check each method in the mapping
+        for(ApiMethod apiMethod : apiMethods){
+            // if it is mapped to phrase, allow it (non-violation)
+            if(apiMethod.phrases.contains(phrase.toLowerCase().trim())) {
+                PolicyViolationAppComponent.logger.info("Allowing " + apiMethod.toSimpleString());
+                found = true;
+                apiMethod.allowed = true;
             }
+        }
+        if(found){
+            PolicyViolationAppComponent.logger.info("Detected directly-mapped phrase (" + phrase + ") in policy. " +
+                    "Associated methods marked as allowed.");
         }
     }
 

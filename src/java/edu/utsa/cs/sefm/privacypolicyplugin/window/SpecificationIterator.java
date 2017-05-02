@@ -2,19 +2,14 @@ package edu.utsa.cs.sefm.privacypolicyplugin.window;
 
 import com.intellij.openapi.application.ApplicationManager;
 import edu.utsa.cs.sefm.privacypolicyplugin.PolicyViolationAppComponent;
-import edu.utsa.cs.sefm.privacypolicyplugin.models.Api;
+import edu.utsa.cs.sefm.privacypolicyplugin.models.ApiMethod;
 import edu.utsa.cs.sefm.privacypolicyplugin.models.Specification;
-import edu.utsa.cs.sefm.privacypolicyplugin.preprocess.ParagraphProcessor;
+import edu.utsa.cs.sefm.privacypolicyplugin.nlp.ontology.preprocess.ParagraphProcessor;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 
-/**
- * Created by Rocky on 4/28/2016.
- */
 public class SpecificationIterator extends JFrame {
     public static final String[] VERBS = {"COLLECTED", "SHARED", "ACCESSED"};
     private JLabel instructions;
@@ -48,7 +43,7 @@ public class SpecificationIterator extends JFrame {
     private int totalApis;
     private int currentApi;
 
-    public SpecificationIterator() {
+    SpecificationIterator() {
         super("Specification Generation");
         setContentPane(rootPanel);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -62,24 +57,16 @@ public class SpecificationIterator extends JFrame {
             apisInCode = comp.apisInCode.toArray();
             currentApi = 0; // counter
         } else {
-            // display some kind of message and close
+            // TODO add notification and close
+            PolicyViolationAppComponent.logger.warn("No sensitive API invocations detected");
         }
 
-
         populateFields();
-
         setVisible(true);
 
-        nextButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                // store things
-                storeFields();
-
-                // populate fields
-                populateFields();
-
-            }
+        nextButton.addActionListener(e -> {
+            storeFields(); // store things
+            populateFields(); // populate fields
         });
     }
 
@@ -112,9 +99,9 @@ public class SpecificationIterator extends JFrame {
 
             // method phrases
             phraseSelect.removeAllItems();
-            for (Api existingApi : comp.apis)
-                if (existingApi.api.toLowerCase().equals(api.toLowerCase()))
-                    for (String apiPhrase : existingApi.phrases)
+            for (ApiMethod existingApiMethod : comp.apiMethods)
+                if (existingApiMethod.api.toLowerCase().equals(api.toLowerCase()))
+                    for (String apiPhrase : existingApiMethod.phrases)
                         this.phraseSelect.addItem(apiPhrase);
 
             // verbs

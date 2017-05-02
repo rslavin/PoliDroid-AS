@@ -1,8 +1,5 @@
-package edu.utsa.cs.sefm.privacypolicyplugin.preprocess;
+package edu.utsa.cs.sefm.privacypolicyplugin.nlp.ontology.preprocess;
 
-/**
- * Created by Mitra on 3/21/2016.
- */
 import edu.stanford.nlp.ling.CoreAnnotations.SentencesAnnotation;
 import edu.stanford.nlp.pipeline.Annotation;
 import edu.stanford.nlp.pipeline.StanfordCoreNLP;

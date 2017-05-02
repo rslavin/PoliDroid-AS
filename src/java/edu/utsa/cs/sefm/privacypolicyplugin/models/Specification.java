@@ -1,10 +1,7 @@
 package edu.utsa.cs.sefm.privacypolicyplugin.models;
 
-/**
- * Created by Rocky on 5/4/2016.
- */
 public class Specification {
-    public static final String NOT_SPECIFIED = "NOT SPECIFIED";
+    private static final String NOT_SPECIFIED = "NOT SPECIFIED";
 
     private String methodName;
     private String verb;
