@@ -12,6 +12,7 @@ public class HTMLUtils {
     public static String getText(VirtualFile policy) {
         StringBuilder documentHtml = new StringBuilder();
 
+        // parse into a string
         try {
             BufferedReader br = new BufferedReader(new InputStreamReader(policy.getInputStream(), "UTF-8"));
             String line;
@@ -23,6 +24,8 @@ public class HTMLUtils {
             e.printStackTrace();
             return null;
         }
+
+        // if not a .html file, return the string
         if (!policy.getName().toLowerCase().endsWith(".html")) {
             PolicyViolationAppComponent.logger.info("Loaded text file");
             return documentHtml.toString();

@@ -1,5 +1,6 @@
 package edu.utsa.cs.sefm.privacypolicyplugin.window;
 
+import com.intellij.codeInsight.daemon.DaemonCodeAnalyzer;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DataKeys;
@@ -32,6 +33,10 @@ public class OntologyFileChooser extends AnAction {
 
                 OntologyOWLAPI.lemmaOntologyPhrases = Lemmatizer.lemmatizeRList(sb.toString());
                 PolicyViolationAppComponent.logger.info(OntologyOWLAPI.lemmaOntologyPhrases.size() + " ontology phrases loaded");
+                if (project != null) {
+                    PolicyViolationAppComponent.logger.info("Restarting DaemonCodeAnalyzer");
+                    DaemonCodeAnalyzer.getInstance(project).restart();
+                }
 
             } catch (Exception exp) {
                 PolicyViolationAppComponent.logger.error("Failed to load ontology file");

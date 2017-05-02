@@ -8,15 +8,10 @@ import org.semanticweb.owlapi.model.*;
 import java.util.*;
 
 public class OntologyOWLAPI {
-    public static HashMap<String, String> map = new HashMap<>();
+    private static HashMap<String, String> map = new HashMap<>();
     public static OWLOntology ontology;
     public static List<String> ontologyPhrases = Collections.synchronizedList(new ArrayList<String>());
     public static List<String> lemmaOntologyPhrases = Collections.synchronizedList(new LinkedList<String>());
-    private static OWLOntologyManager man;
-    private static OWLDataFactory fact;
-    private static String unvisited = "unvisited";
-    private static String visited = "visited";
-    private static String visiting = "visiting";
 
     /**
      * loads the ontology from the specified file
@@ -25,8 +20,8 @@ public class OntologyOWLAPI {
      */
     public static void loader(VirtualFile ontologyFile) {
         try {
-            man = OWLManager.createOWLOntologyManager();
-            fact = man.getOWLDataFactory();
+            OWLOntologyManager man = OWLManager.createOWLOntologyManager();
+            OWLDataFactory fact = man.getOWLDataFactory();
             ontology = man.loadOntologyFromOntologyDocument(ontologyFile.getInputStream());
             PolicyViolationAppComponent.logger.info("Ontology was read successfully. Total Axioms: " + ontology.getAxiomCount());
         } catch (Exception e) {
@@ -172,12 +167,14 @@ public class OntologyOWLAPI {
             return false;
         }
         LinkedList<String> q = new LinkedList<String>();
+        String unvisited = "unvisited";
         for (OWLClass u : ontology.getClassesInSignature()) { // method defined in Graph class. not in java APIs
             // set all states as unvisited
             map.put(u.getIRI().toString().toLowerCase().substring(u.getIRI().toString().indexOf('#') + 1), unvisited);
         }
 
         if (map.containsKey(child.toLowerCase())) {
+            String visiting = "visiting";
             map.put(child.toLowerCase(), visiting);
             q.add(child);
             String curr;
@@ -201,6 +198,7 @@ public class OntologyOWLAPI {
                         }
                     }
                 }
+                String visited = "visited";
                 map.put(curr != null ? curr.toLowerCase() : null, visited);
             }
         }

@@ -13,9 +13,9 @@ public class ParagraphProcessor {
             "acquired", "combined", "reviewed", "submitted", "logged", "used", "processed", "utilized", "monitored", "stored",
             "retained", "maintained", "kept", "recorded", "saved", "shared", "disclosed", "sent", "transferred", "displayed",
             "psoted", "delivered", "distributed", "notified", "rented"};
-    public static List<String> ontologyPhrasesInPolicy = Collections.synchronizedList(new ArrayList<String>());
-    private static List<String> nounPhrasesPermutations = Collections.synchronizedList(new ArrayList<String>());
-    private static HashMap<String, String> constituentsMap = new HashMap<>();
+    public List<String> ontologyPhrasesInPolicy;
+    private List<String> nounPhrasesPermutations;
+    private HashMap<String, String> constituentsMap;
     //private static List<String> collectVerbList = Collections.synchronizedList(Arrays.asList("store", "collect", "receive",
     // "aggregate", "send", "record", "acquire", "obtain", "use", "transmit", "access", "log", "retain"));
     private static List<String> verbList = Collections.synchronizedList(Arrays.asList("collect", "obtain", "receive", "provide",
@@ -23,11 +23,21 @@ public class ParagraphProcessor {
             "store", "retain", "maintain", "keep", "record", "save", "share", "disclose", "send", "transfer", "display",
             "post", "deliver", "distribute", "notify", "rent"));
 
+    public ParagraphProcessor(){
+        this.init();
+    }
+
+    private void init(){
+        ontologyPhrasesInPolicy = new ArrayList<>();
+        nounPhrasesPermutations = new ArrayList<>();
+        constituentsMap = new HashMap<>();
+    }
     /**
      * @param text
      */
     public void processParagraphs(String text) {
         PolicyViolationAppComponent.logger.info("### Processing paragraphs ###");
+        this.init();
 
         // annotate paragraphs
         ParagraphParser parser = new ParagraphParser();
@@ -106,7 +116,7 @@ public class ParagraphProcessor {
      *
      * @param rootNode
      */
-    private static void getVerbPhrases(DefaultMutableTreeNode rootNode) {
+    private void getVerbPhrases(DefaultMutableTreeNode rootNode) {
         PolicyViolationAppComponent.logger.info("### Finding verb phrases for root node \"" + rootNode +"\" ###");
         if (rootNode.getUserObject().equals("VP")) {
             List<String> verbs = new ArrayList<>();
@@ -155,7 +165,7 @@ public class ParagraphProcessor {
         PolicyViolationAppComponent.logger.info("### END Finding verb phrases for root node \"" + rootNode +"\" ###");
     }
 
-    private static void analyzeConstituents(DefaultMutableTreeNode rootNode){
+    private void analyzeConstituents(DefaultMutableTreeNode rootNode){
         PolicyViolationAppComponent.logger.info("### Finding constituents for root node \"" + rootNode +"\" ###");
         List<String> constituents = new ArrayList<>();
 
@@ -178,7 +188,7 @@ public class ParagraphProcessor {
      * This method finds all the permutations of nouns in the noun phrases of a sentence
      * @param rootNode
      */
-    private static void analyzeNounPhrases(DefaultMutableTreeNode rootNode){
+    private void analyzeNounPhrases(DefaultMutableTreeNode rootNode){
         List<String> nounPhrases = new ArrayList<>();
         getNounPhrases(nounPhrases, rootNode);
         PolicyViolationAppComponent.logger.info("### Finding noun phrases for root node \"" + rootNode +"\" ###");

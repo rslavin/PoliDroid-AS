@@ -8,7 +8,6 @@ import com.intellij.psi.JavaElementVisitor;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.PsiMethodCallExpression;
 import edu.utsa.cs.sefm.privacypolicyplugin.nlp.ontology.OntologyOWLAPI;
-import edu.utsa.cs.sefm.privacypolicyplugin.nlp.ontology.preprocess.ParagraphProcessor;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 
@@ -73,6 +72,7 @@ public class PolicyViolationInspection extends LocalInspectionTool{
     }
 
     private String getViolation(PsiMethodCallExpression expression){
+        PolicyViolationAppComponent comp = (PolicyViolationAppComponent) ApplicationManager.getApplication().getComponent("PolicyViolationAppComponent");
         try {
             String className = expression.resolveMethod().getContainingClass().getQualifiedName();
             String methodName = expression.getMethodExpression().getReferenceName().toString();
@@ -83,11 +83,11 @@ public class PolicyViolationInspection extends LocalInspectionTool{
                 for (String phraseMappedToApi : phrasesOfAPI) {
                     PolicyViolationAppComponent.logger.info("Phrase of API: " + phraseMappedToApi);
                     // if the policy/ontology intersection contains the phrase, skip it
-                    if (ParagraphProcessor.ontologyPhrasesInPolicy.contains(phraseMappedToApi.replaceAll("_", " "))) {
+                    if (comp.paragraphProcessor.ontologyPhrasesInPolicy.contains(phraseMappedToApi.replaceAll("_", " "))) {
                         phrasesOfAPI.remove(phraseMappedToApi);
                         continue;
                     }
-                    for (String phraseInPolicy : ParagraphProcessor.ontologyPhrasesInPolicy) {
+                    for (String phraseInPolicy : comp.paragraphProcessor.ontologyPhrasesInPolicy) {
                         if (OntologyOWLAPI.isEquivalent(phraseInPolicy.toLowerCase().replaceAll(" ", "_"), phraseMappedToApi.toLowerCase().replaceAll(" ", "_"), OntologyOWLAPI.ontology)) {
                             phrasesOfAPI.remove(phraseMappedToApi);
                             break;
@@ -95,26 +95,32 @@ public class PolicyViolationInspection extends LocalInspectionTool{
                     }
                 }
                 if (!phrasesOfAPI.isEmpty()) { // if still has matches
-                    // TODO check why the code below doesn't find weak/strong violations anymore
-                    List<String> possiblePhrases = new ArrayList<>();
+                    List<String> weaklyMappedPhrases = new ArrayList<>();
+                    String ancestor = null;
+                    // check for weak violation
                     for (String phraseMappedtoAPI : phrasesOfAPI) {
+                        // if the phrase exists in the ontology
                         if (OntologyOWLAPI.classDoesExists(phraseMappedtoAPI.toLowerCase().replaceAll(" ", "_"), OntologyOWLAPI.ontology)) {
-                            for (String phraseInPolicy : ParagraphProcessor.ontologyPhrasesInPolicy) {
+                            // for each phrase in the policy && ontology
+                            for (String phraseInPolicy : comp.paragraphProcessor.ontologyPhrasesInPolicy) {
+                                // check if it is an ancestor to phraseMappedToAPI
                                 if (OntologyOWLAPI.isAncestorOf(phraseInPolicy.toLowerCase().replaceAll(" ", "_"), phraseMappedtoAPI.toLowerCase().replaceAll(" ", "_"), OntologyOWLAPI.ontology)) {
-                                    if (!possiblePhrases.contains(phraseMappedtoAPI)) {
-                                        possiblePhrases.add(phraseMappedtoAPI.replaceAll("_", " "));
+                                    if (!weaklyMappedPhrases.contains(phraseMappedtoAPI)) {
+                                        // mark the descendant (phraseMappedToAPI) to weaklyMappedPhrases
+                                        weaklyMappedPhrases.add(phraseMappedtoAPI.replaceAll("_", " "));
                                         PolicyViolationAppComponent.logger.info("Ancestor is:" + phraseInPolicy);
+                                        ancestor = phraseInPolicy;
                                     }
                                 }
                             }
                         }
                     }
-                    if (!possiblePhrases.isEmpty()) {
+                    if (!weaklyMappedPhrases.isEmpty()) {
                         StringBuilder phrases = new StringBuilder();
-                        for (String possiblePhrase : possiblePhrases) {
+                        for (String possiblePhrase : weaklyMappedPhrases) {
                             phrases.append("\"").append(possiblePhrase).append("\" ");
                         }
-                        return ("Possible weak privacy policy violation. Consider adding these phrases: " + phrases + " to your policy.");
+                        return ("Possible weak privacy policy violation (Found \"" + ancestor + "\"). Consider adding these phrases: " + phrases + " to your policy.");
                     } else {
                         StringBuilder strongPhrases = new StringBuilder();
                         for (String strongPhrase : phrasesOfAPI) {

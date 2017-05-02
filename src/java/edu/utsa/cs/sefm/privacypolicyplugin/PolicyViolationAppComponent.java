@@ -4,6 +4,7 @@ import com.intellij.openapi.components.ApplicationComponent;
 import com.intellij.openapi.diagnostic.Logger;
 import edu.utsa.cs.sefm.privacypolicyplugin.models.ApiMethod;
 import edu.utsa.cs.sefm.privacypolicyplugin.models.Specification;
+import edu.utsa.cs.sefm.privacypolicyplugin.nlp.ontology.preprocess.ParagraphProcessor;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
@@ -17,6 +18,7 @@ public class PolicyViolationAppComponent implements ApplicationComponent {
     public Set<String> phrases;
     public Set<String> apisInCode; // unique list of api methods that we have models for in the code
     public List<Specification> specifications; // specifications from spec generator
+    public ParagraphProcessor paragraphProcessor;
 
 
     public PolicyViolationAppComponent() {
@@ -24,6 +26,7 @@ public class PolicyViolationAppComponent implements ApplicationComponent {
         phrases = new HashSet<>();
         apisInCode = new HashSet<>();
         specifications = new ArrayList<>();
+        paragraphProcessor = new ParagraphProcessor();
     }
 
     /**
@@ -112,13 +115,13 @@ public class PolicyViolationAppComponent implements ApplicationComponent {
         for(ApiMethod apiMethod : apiMethods){
             // if it is mapped to phrase, allow it (non-violation)
             if(apiMethod.phrases.contains(phrase.toLowerCase().trim())) {
-                PolicyViolationAppComponent.logger.info("Allowing " + apiMethod.toSimpleString());
+                PolicyViolationAppComponent.logger.info("\t Allowing " + apiMethod.toSimpleString());
                 found = true;
                 apiMethod.allowed = true;
             }
         }
         if(found){
-            PolicyViolationAppComponent.logger.info("Detected directly-mapped phrase (" + phrase + ") in policy. " +
+            PolicyViolationAppComponent.logger.info("\t Detected directly-mapped phrase (" + phrase + ") in policy. " +
                     "Associated methods marked as allowed.");
         }
     }

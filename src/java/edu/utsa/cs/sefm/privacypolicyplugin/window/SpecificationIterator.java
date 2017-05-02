@@ -100,7 +100,7 @@ public class SpecificationIterator extends JFrame {
             // method phrases
             phraseSelect.removeAllItems();
             for (ApiMethod existingApiMethod : comp.apiMethods)
-                if (existingApiMethod.api.toLowerCase().equals(api.toLowerCase()))
+                if (existingApiMethod.toSimpleString().equals(api.toLowerCase()))
                     for (String apiPhrase : existingApiMethod.phrases)
                         this.phraseSelect.addItem(apiPhrase);
 
