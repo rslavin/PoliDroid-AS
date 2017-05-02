@@ -1,5 +1,6 @@
 package edu.utsa.cs.sefm.privacypolicyplugin;
 
+import com.intellij.codeInspection.InspectionProfileEntry;
 import com.intellij.codeInspection.LocalInspectionTool;
 import com.intellij.codeInspection.ProblemsHolder;
 import com.intellij.openapi.application.ApplicationManager;
@@ -13,6 +14,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PolicyViolationInspection extends LocalInspectionTool{
+    private String shortName = null;
+
+    @NotNull
+    @Override
+    public String getShortName() {
+        if (shortName == null) {
+            final Class<? extends PolicyViolationInspection> aClass = getClass();
+            final String name = aClass.getSimpleName();
+            shortName = InspectionProfileEntry.getShortName(name);
+            if (shortName.equals(name)) {
+                throw new AssertionError("class name must end with 'Inspection' to correctly calculate the short name: " + name);
+            }
+        }
+        return shortName;
+    }
 
     @NotNull
     @Override
