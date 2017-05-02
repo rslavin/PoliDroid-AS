@@ -37,14 +37,14 @@ public class MapFileChooser extends AnAction {
                     parseLine(comp, line);
                     i++;
                 }
-                comp.logger.info(i + " mappings parsed");
+                PolicyViolationAppComponent.logger.info(i + " mappings parsed");
                 br.close();
             } catch (Exception e1) {
-                comp.logger.error("Error parsing models");
+                PolicyViolationAppComponent.logger.error("Error parsing models");
                 e1.printStackTrace();
             }
         }else{
-            comp.logger.error("Invalid file pointer");
+            PolicyViolationAppComponent.logger.error("Invalid file pointer");
         }
     }
 

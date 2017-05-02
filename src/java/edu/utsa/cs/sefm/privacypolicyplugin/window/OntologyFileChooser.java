@@ -3,7 +3,6 @@ package edu.utsa.cs.sefm.privacypolicyplugin.window;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DataKeys;
-import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.fileChooser.FileChooser;
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory;
 import com.intellij.openapi.project.Project;
@@ -22,7 +21,6 @@ public class OntologyFileChooser extends AnAction {
         Project project = e.getData(DataKeys.PROJECT);
         VirtualFile file = FileChooser.chooseFile(FileChooserDescriptorFactory.createSingleFileNoJarsDescriptor(), project, null);
         StringBuilder sb;
-        PolicyViolationAppComponent comp = (PolicyViolationAppComponent) ApplicationManager.getApplication().getComponent("PolicyViolationAppComponent");
         try{
             OntologyOWLAPI.loader(file);
             OntologyOWLAPI.ontologyPhrases = OntologyOWLAPI.ListOfOntologyPhrases(OntologyOWLAPI.ontology);
@@ -32,7 +30,7 @@ public class OntologyFileChooser extends AnAction {
             }
 
             OntologyOWLAPI.lemmaOntologyPhrases = Lemmatizer.lemmatizeRList(sb.toString());
-            comp.logger.info(OntologyOWLAPI.lemmaOntologyPhrases.size() + " ontology phrases loaded");
+            PolicyViolationAppComponent.logger.info(OntologyOWLAPI.lemmaOntologyPhrases.size() + " ontology phrases loaded");
 
         } catch (Exception exp){
             System.err.println("Failed to load ontology file");
