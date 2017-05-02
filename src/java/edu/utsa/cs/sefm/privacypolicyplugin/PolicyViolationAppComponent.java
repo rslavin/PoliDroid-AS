@@ -93,7 +93,7 @@ public class PolicyViolationAppComponent implements ApplicationComponent {
                 apisInCode.add(api);
                 // check if it's a violation
                 if(!existingApiMethod.allowed) {
-                    PolicyViolationAppComponent.logger.info("Violation detected: " + api);
+                    PolicyViolationAppComponent.logger.info("Misalignment detected: " + api);
                     return existingApiMethod.phrases;
                 }
             }

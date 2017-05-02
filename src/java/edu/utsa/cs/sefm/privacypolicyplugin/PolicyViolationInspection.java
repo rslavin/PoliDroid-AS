@@ -1,6 +1,5 @@
 package edu.utsa.cs.sefm.privacypolicyplugin;
 
-import com.intellij.codeInsight.daemon.GroupNames;
 import com.intellij.codeInspection.LocalInspectionTool;
 import com.intellij.codeInspection.ProblemsHolder;
 import com.intellij.openapi.application.ApplicationManager;
@@ -8,35 +7,12 @@ import com.intellij.psi.JavaElementVisitor;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.PsiMethodCallExpression;
 import edu.utsa.cs.sefm.privacypolicyplugin.nlp.ontology.OntologyOWLAPI;
-import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by Rocky on 10/11/2015.
- */
 public class PolicyViolationInspection extends LocalInspectionTool{
-    @Nls
-    @NotNull
-    @Override
-    public String getDisplayName() {
-        return "PoliDroid-AS";
-    }
-
-    @NotNull
-    @Override
-    public String getShortName() {
-        return "PoliDroid-AS";
-    }
-
-    @Nls
-    @NotNull
-    @Override
-    public String getGroupDisplayName() {
-        return GroupNames.BUGS_GROUP_NAME;
-    }
 
     @NotNull
     @Override
@@ -59,11 +35,6 @@ public class PolicyViolationInspection extends LocalInspectionTool{
     private List<String> isViolation(String api){
         PolicyViolationAppComponent comp = (PolicyViolationAppComponent)ApplicationManager.getApplication().getComponent("PolicyViolationAppComponent");
         return comp.isViolation(api);
-    }
-
-    private String isMappedApi(String api){
-        PolicyViolationAppComponent comp = (PolicyViolationAppComponent)ApplicationManager.getApplication().getComponent("PolicyViolationAppComponent");
-        return comp.hasApi(api);
     }
 
     @Override
@@ -120,13 +91,13 @@ public class PolicyViolationInspection extends LocalInspectionTool{
                         for (String possiblePhrase : weaklyMappedPhrases) {
                             phrases.append("\"").append(possiblePhrase).append("\" ");
                         }
-                        return ("Possible weak privacy policy violation (Found \"" + ancestor + "\"). Consider adding these phrases: " + phrases + " to your policy.");
+                        return ("Possible weak privacy policy misalignment (Found \"" + ancestor + "\"). Consider adding these phrases: " + phrases + " to your policy.");
                     } else {
                         StringBuilder strongPhrases = new StringBuilder();
                         for (String strongPhrase : phrasesOfAPI) {
                             strongPhrases.append("\"").append(strongPhrase).append("\" ");
                         }
-                        return ("Possible strong privacy violation. Consider adding these phrases: " + strongPhrases + " to your policy.");
+                        return ("Possible strong privacy misalignment. Consider adding these phrases: " + strongPhrases + " to your policy.");
                     }
                 }
 

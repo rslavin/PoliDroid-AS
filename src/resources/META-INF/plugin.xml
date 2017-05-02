@@ -1,13 +1,13 @@
 <idea-plugin>
     <id>edu.utsa.cs.sefm.privacypolicyplugin</id>
     <name>PoliDroid-AS - Privacy Policy Verification</name>
-    <version>0.1-alpha</version>
-    <vendor email="rocky.slavin@gmail.com" url="http://sefm.cs.utsa.edu">UTSA SEFM Research Group</vendor>
+    <version>0.2.0-alpha</version>
+    <vendor email="rocky.slavin@gmail.com" url="http://polidroid.org">UTSA SEFM Research Group</vendor>
 
     <description>Detects potential Android privacy policy misalignments.</description>
 
     <change-notes><![CDATA[
-        First version. Detects potential privacy policy violations based on simple mappings and policy file.
+        Improved stability.
     ]]>
     </change-notes>
 
@@ -22,6 +22,9 @@
 
     <extensions defaultExtensionNs="com.intellij">
         <inspectionToolProvider implementation="edu.utsa.cs.sefm.privacypolicyplugin.PolicyViolationToolProvider"/>
+        <localInspection language="JAVA" shortName="PolicyMisalignment" enabledByDefault="true" level="ERROR"
+                         displayName="Privacy policy misalignment detection"
+                         groupName="PoliDroid-AS" implementationClass="edu.utsa.cs.sefm.privacypolicyplugin.PolicyViolationInspection"/>
     </extensions>
 
     <application-components>
@@ -39,10 +42,6 @@
     <actions>
         <!-- Add your actions here -->
 
-        <!--<action id="MapFileChooser" class="MapFileChooser"-->
-        <!--text="MapFileChooser" description="Choose a models file.">-->
-        <!--<add-to-group group-id="MainMenu" anchor="last"/>-->
-        <!--</action>-->
         <group id="PrivacyPolicy.menu" text="_PoliDroid-AS" description="Privacy Policy Menu">
             <add-to-group group-id="MainMenu" anchor="last"  />
             <action id="MapFileChooser" class="edu.utsa.cs.sefm.privacypolicyplugin.window.MapFileChooser"
