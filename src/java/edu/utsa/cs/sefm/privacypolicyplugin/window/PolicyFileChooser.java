@@ -19,26 +19,28 @@ public class PolicyFileChooser extends AnAction {
         PolicyViolationAppComponent comp = (PolicyViolationAppComponent) ApplicationManager.getApplication().getComponent("PolicyViolationAppComponent");
         VirtualFile file = FileChooser.chooseFile(FileChooserDescriptorFactory.createSingleFileNoJarsDescriptor(), project, null);
 
-        String documentPlaintext = HTMLUtils.getText(file);
-        PolicyViolationAppComponent.logger.info("Policy plaintext: " + documentPlaintext);
+        if(file != null) {
+            String documentPlaintext = HTMLUtils.getText(file);
+            PolicyViolationAppComponent.logger.info("Policy plaintext: " + documentPlaintext);
 
-        comp.paragraphProcessor.processParagraphs(documentPlaintext);
-        comp.paragraphProcessor.findNounsInOntology();
-        comp.paragraphProcessor.findConstituentsInOntology();
+            comp.paragraphProcessor.processParagraphs(documentPlaintext);
+            comp.paragraphProcessor.findNounsInOntology();
+            comp.paragraphProcessor.findConstituentsInOntology();
 
-        if(comp.paragraphProcessor.ontologyPhrasesInPolicy.size() > 0) {
-            PolicyViolationAppComponent.logger.info("### Phrases in the ontology and privacy policy (with verb phrases) are: ###");
-            for (String phraseInPolicy : comp.paragraphProcessor.ontologyPhrasesInPolicy) {
-                // add phrase and flag corresponding methods as allowed
-                PolicyViolationAppComponent.logger.info("\t*" + phraseInPolicy);
-                comp.addPolicyPhrase(phraseInPolicy.toLowerCase().trim());
+            if (comp.paragraphProcessor.ontologyPhrasesInPolicy.size() > 0) {
+                PolicyViolationAppComponent.logger.info("### Phrases in the ontology and privacy policy (with verb phrases) are: ###");
+                for (String phraseInPolicy : comp.paragraphProcessor.ontologyPhrasesInPolicy) {
+                    // add phrase and flag corresponding methods as allowed
+                    PolicyViolationAppComponent.logger.info("\t*" + phraseInPolicy);
+                    comp.addPolicyPhrase(phraseInPolicy.toLowerCase().trim());
+                }
+                if (project != null) {
+                    PolicyViolationAppComponent.logger.info("Restarting DaemonCodeAnalyzer");
+                    DaemonCodeAnalyzer.getInstance(project).restart();
+                }
+            } else {
+                PolicyViolationAppComponent.logger.info("### No phrases from privacy policy present in ontology ###");
             }
-            if (project != null) {
-                PolicyViolationAppComponent.logger.info("Restarting DaemonCodeAnalyzer");
-                DaemonCodeAnalyzer.getInstance(project).restart();
-            }
-        }else{
-            PolicyViolationAppComponent.logger.info("### No phrases from privacy policy present in ontology ###");
         }
     }
 }
