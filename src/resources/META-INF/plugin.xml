@@ -22,7 +22,7 @@
 
     <extensions defaultExtensionNs="com.intellij">
         <inspectionToolProvider implementation="edu.utsa.cs.sefm.privacypolicyplugin.PolicyViolationToolProvider"/>
-        <localInspection language="JAVA" enabledByDefault="true" level="ERROR"
+        <localInspection language="JAVA" enabledByDefault="true" level="WARNING"
                          displayName="Privacy policy misalignment detection"
                          groupName="PoliDroid-AS" implementationClass="edu.utsa.cs.sefm.privacypolicyplugin.PolicyViolationInspection"/>
     </extensions>
