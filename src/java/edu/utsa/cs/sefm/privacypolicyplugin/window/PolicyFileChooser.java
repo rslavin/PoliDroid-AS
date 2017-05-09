@@ -20,6 +20,7 @@ public class PolicyFileChooser extends AnAction {
         VirtualFile file = FileChooser.chooseFile(FileChooserDescriptorFactory.createSingleFileNoJarsDescriptor(), project, null);
 
         if(file != null) {
+            file.refresh(false, false);
             String documentPlaintext = HTMLUtils.getText(file);
             PolicyViolationAppComponent.logger.info("Policy plaintext: " + documentPlaintext);
 

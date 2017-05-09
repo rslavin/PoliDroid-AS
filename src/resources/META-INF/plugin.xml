@@ -7,7 +7,7 @@
     <description>Detects potential Android privacy policy misalignments.</description>
 
     <change-notes><![CDATA[
-        Improved stability.
+        Fixed policy file caching issue
     ]]>
     </change-notes>
 
