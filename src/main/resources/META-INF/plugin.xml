@@ -1,0 +1,58 @@
+<idea-plugin>
+    <id>edu.utsa.cs.sefm.privacypolicyplugin</id>
+    <name>PoliDroid-AS - Privacy Policy Verification</name>
+    <version>v1.0.1</version>
+    <vendor email="rocky.slavin@gmail.com" url="http://polidroid.org">UTSA SEFM Research Group</vendor>
+
+    <description>Detects potential Android privacy policy misalignments.</description>
+
+    <change-notes><![CDATA[
+        Fixed policy file caching issue
+    ]]>
+    </change-notes>
+
+    <!-- please see https://confluence.jetbrains.com/display/IDEADEV/Build+Number+Ranges for description -->
+    <idea-version since-build="131"/>
+
+    <!-- please see https://confluence.jetbrains.com/display/IDEADEV/Plugin+Compatibility+with+IntelliJ+Platform+Products
+         on how to target different products -->
+    <!-- uncomment to enable plugin in all products
+    <depends>com.intellij.modules.lang</depends>
+    -->
+
+    <extensions defaultExtensionNs="com.intellij">
+        <inspectionToolProvider implementation="edu.utsa.cs.sefm.privacypolicyplugin.PolicyViolationToolProvider"/>
+        <localInspection language="JAVA" enabledByDefault="true" level="WARNING"
+                         displayName="Privacy policy misalignment detection"
+                         groupName="PoliDroid-AS" implementationClass="edu.utsa.cs.sefm.privacypolicyplugin.PolicyViolationInspection"/>
+    </extensions>
+
+    <application-components>
+        <!-- Add your application components here -->
+        <component>
+            <implementation-class>edu.utsa.cs.sefm.privacypolicyplugin.PolicyViolationAppComponent
+            </implementation-class>
+        </component>
+    </application-components>
+
+    <project-components>
+        <!-- Add your project components here -->
+    </project-components>
+
+    <actions>
+        <!-- Add your actions here -->
+
+        <group id="PrivacyPolicy.menu" text="_PoliDroid-AS" description="Privacy Policy Menu">
+            <add-to-group group-id="MainMenu" anchor="last"  />
+            <action id="MapFileChooser" class="edu.utsa.cs.sefm.privacypolicyplugin.window.MapFileChooser"
+                    text="Select _Mappings File" description="Choose a mappings file." />
+            <action id="OntologyFileChooser" class="edu.utsa.cs.sefm.privacypolicyplugin.window.OntologyFileChooser"
+                    text="Select _Ontology File" description="Choose an ontology file." />
+            <action id="PolicyFileChooser" class="edu.utsa.cs.sefm.privacypolicyplugin.window.PolicyFileChooser"
+                    text="Select _Policy File" description="Choose a policy file." />
+            <action id="SpecificationDialog" class="edu.utsa.cs.sefm.privacypolicyplugin.window.SpecificationDialogAction"
+                    text="Generate _Specifications" description="Generate privacy specifications." />
+        </group>
+    </actions>
+
+</idea-plugin>
