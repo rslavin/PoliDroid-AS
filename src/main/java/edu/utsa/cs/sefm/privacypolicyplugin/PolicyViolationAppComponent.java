@@ -12,7 +12,7 @@ import java.util.*;
 /**
  * Created by Rocky on 10/18/2015.
  */
-public class PolicyViolationAppComponent implements ApplicationComponent {
+public class PolicyViolationAppComponent {
     public final static Logger logger = Logger.getInstance("PoliDroid-AS");
     public List<ApiMethod> apiMethods; // all methods from models
     public Set<String> phrases;

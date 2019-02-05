@@ -19,7 +19,7 @@ public class MapFileChooser extends AnAction {
         int i = 0;
         Project project = e.getData(DataKeys.PROJECT);
         VirtualFile file = FileChooser.chooseFile(FileChooserDescriptorFactory.createSingleFileNoJarsDescriptor(), project, null);
-        PolicyViolationAppComponent comp = (PolicyViolationAppComponent) ApplicationManager.getApplication().getComponent("PolicyViolationAppComponent");
+        PolicyViolationAppComponent comp = ApplicationManager.getApplication().getComponent(PolicyViolationAppComponent.class);
 
         if(file != null) {
             try {
