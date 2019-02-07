@@ -1,6 +1,5 @@
 package edu.utsa.cs.sefm.privacypolicyplugin;
 
-import com.intellij.openapi.components.ApplicationComponent;
 import com.intellij.openapi.diagnostic.Logger;
 import edu.utsa.cs.sefm.privacypolicyplugin.models.ApiMethod;
 import edu.utsa.cs.sefm.privacypolicyplugin.models.Specification;

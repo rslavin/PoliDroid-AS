@@ -25,7 +25,7 @@ public class SpecificationDisplay extends JFrame{
         setContentPane(rootPanel);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
-        comp = (PolicyViolationAppComponent) ApplicationManager.getApplication().getComponent("PolicyViolationAppComponent");
+        comp = ApplicationManager.getApplication().getComponent(PolicyViolationAppComponent.class);
         specString = "";
         for(Specification spec : comp.specifications)
             specString += spec + "\n\n==================\n\n";

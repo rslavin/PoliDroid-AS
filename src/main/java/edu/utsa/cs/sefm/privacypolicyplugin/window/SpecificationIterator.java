@@ -50,7 +50,7 @@ public class SpecificationIterator extends JFrame {
         pack();
         Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
         setLocation(dimension.width / 2 - this.getSize().width / 2, dimension.height / 2 - this.getSize().height / 2);
-        comp = (PolicyViolationAppComponent) ApplicationManager.getApplication().getComponent("PolicyViolationAppComponent");
+        comp = ApplicationManager.getApplication().getComponent(PolicyViolationAppComponent.class);
         totalApis = comp.apisInCode.size();
 
         if (totalApis > 0) {
