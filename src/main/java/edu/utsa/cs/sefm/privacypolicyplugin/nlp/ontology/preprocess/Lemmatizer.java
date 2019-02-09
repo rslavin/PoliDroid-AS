@@ -5,6 +5,8 @@ import edu.stanford.nlp.ling.CoreLabel;
 import edu.stanford.nlp.pipeline.Annotation;
 import edu.stanford.nlp.pipeline.StanfordCoreNLP;
 import edu.stanford.nlp.util.CoreMap;
+import org.slf4j.ILoggerFactory;
+import edu.stanford.nlp.util.logging.RedwoodConfiguration;
 
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -38,6 +40,7 @@ class StanfordLemmatizer {
         Properties props;
         props = new Properties();
         props.put("annotators", "tokenize, ssplit, pos, lemma");
+       // RedwoodConfiguration.current().clear().apply();
 
             /*
              * This is a pipeline that takes in a string and returns various analyzed linguistic forms.
