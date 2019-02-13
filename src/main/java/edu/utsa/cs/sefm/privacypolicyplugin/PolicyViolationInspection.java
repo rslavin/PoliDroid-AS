@@ -49,7 +49,7 @@ public class PolicyViolationInspection extends LocalInspectionTool{
     }
 
     private List<String> isViolation(String api){
-        PolicyViolationAppComponent comp = (PolicyViolationAppComponent)ApplicationManager.getApplication().getComponent("PolicyViolationAppComponent");
+        PolicyViolationAppComponent comp = ApplicationManager.getApplication().getComponent(PolicyViolationAppComponent.class);
         return comp.isViolation(api);
     }
 
@@ -59,7 +59,7 @@ public class PolicyViolationInspection extends LocalInspectionTool{
     }
 
     private String getViolation(PsiMethodCallExpression expression){
-        PolicyViolationAppComponent comp = (PolicyViolationAppComponent) ApplicationManager.getApplication().getComponent("PolicyViolationAppComponent");
+        PolicyViolationAppComponent comp = ApplicationManager.getApplication().getComponent(PolicyViolationAppComponent.class);
         try {
             String className = expression.resolveMethod().getContainingClass().getQualifiedName();
             String methodName = expression.getMethodExpression().getReferenceName().toString();

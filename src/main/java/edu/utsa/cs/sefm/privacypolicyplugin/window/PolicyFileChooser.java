@@ -16,7 +16,7 @@ public class PolicyFileChooser extends AnAction {
     public void actionPerformed(AnActionEvent e) {
 
         Project project = e.getData(DataKeys.PROJECT);
-        PolicyViolationAppComponent comp = (PolicyViolationAppComponent) ApplicationManager.getApplication().getComponent("PolicyViolationAppComponent");
+        PolicyViolationAppComponent comp = ApplicationManager.getApplication().getComponent(PolicyViolationAppComponent.class);
         VirtualFile file = FileChooser.chooseFile(FileChooserDescriptorFactory.createSingleFileNoJarsDescriptor(), project, null);
 
         if(file != null) {

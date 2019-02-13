@@ -1,6 +1,5 @@
 package edu.utsa.cs.sefm.privacypolicyplugin;
 
-import com.intellij.openapi.components.ApplicationComponent;
 import com.intellij.openapi.diagnostic.Logger;
 import edu.utsa.cs.sefm.privacypolicyplugin.models.ApiMethod;
 import edu.utsa.cs.sefm.privacypolicyplugin.models.Specification;
@@ -12,7 +11,7 @@ import java.util.*;
 /**
  * Created by Rocky on 10/18/2015.
  */
-public class PolicyViolationAppComponent implements ApplicationComponent {
+public class PolicyViolationAppComponent {
     public final static Logger logger = Logger.getInstance("PoliDroid-AS");
     public List<ApiMethod> apiMethods; // all methods from models
     public Set<String> phrases;
