@@ -26,7 +26,9 @@ configurations {
 }
 
 intellij {
-    version 'IC-2018.3.4' 
+    version 'IC-2018.2.2'
+    //Uncomment next line to run in Android Studio. Insert local path to Android Studio
+    //alternativeIdePath "C:/path/to/Android Studio"
     plugins 'coverage' //Bundled plugin dependencies
     pluginName 'PoliDroid-AS(w_gradle)'
 }
