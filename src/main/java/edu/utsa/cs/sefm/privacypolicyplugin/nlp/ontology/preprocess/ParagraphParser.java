@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Properties;
 
 class ParagraphParser {
-    private static double SENTIMENT_THRESHOLD = 2;
+    private static double SENTIMENT_THRESHOLD = 1;
 
     private StanfordCoreNLP pipeline;
 
