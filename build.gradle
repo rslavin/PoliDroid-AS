@@ -3,13 +3,14 @@ plugins {
     id 'org.jetbrains.intellij' version '0.4.2'
 }
 
-version '1.0-SNAPSHOT'
+//version 'v1.0.2'
 
 sourceCompatibility = 1.8
 
 repositories {
     mavenCentral()
 }
+
 
 apply plugin: 'idea'
 
@@ -21,21 +22,28 @@ dependencies {
     implementation "org.jsoup:jsoup:1.8.2"
 }
 
+
 configurations {
     runtime.exclude group: "org.slf4j", module: "slf4j-api"
 }
 
+publishPlugin {
+    username intellijPublishUsername
+    password intellijPublishPassword
+}
+
+
 intellij {
     version 'IC-2018.2.2'
     //Uncomment next line to run in Android Studio. Insert local path to Android Studio
-    //alternativeIdePath "C:/path/to/Android Studio"
+    alternativeIdePath "C:/Program Files/Android/Android Studio"
     plugins 'coverage' //Bundled plugin dependencies
-    pluginName 'PoliDroid-AS(w_gradle)'
+    pluginName 'PoliDroid-AS'
 }
 
 
 patchPluginXml {
-    changeNotes """
-      Add change notes here.<br>
-      <em>most HTML tags may be used</em>"""
+    intellij.updateSinceUntilBuild = false
+    //changeNotes """
+      //Reduced inspection sensitivity to privacy policy violations, to reflect more realistic policy expressions"""
 }
