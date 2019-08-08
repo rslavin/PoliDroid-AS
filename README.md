@@ -1,7 +1,5 @@
-# PoliDroid-AS-lite
+# PoliDroid-AS
 Android Studio plugin for the detection of potential privacy policy misalignments. PoliDroid-AS works by scanning your code in real time and detecting policy violations based on a mapping between Android API methods and a mobile privacy lexicon. Weak and strong violations are identified based on an OWL mobile privacy ontology.
-
-This is a "lite" version of [PoliDroid-AS](https://github.com/rslavin/PoliDroid-AS) in that it utilizes the [Stanford CoreNLP Server](https://stanfordnlp.github.io/CoreNLP/corenlp-server.html) instead of performing NLP localy.
 
 For more information, visit http://polidroid.org.
 
